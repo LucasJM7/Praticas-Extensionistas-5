@@ -1,12 +1,12 @@
 # Relatório Simples de Diagnóstico Inicial - CRECHENOW
 
 # GRUPO:
-## * NOME NOME NOME NOME NOME     - Nº de Matrícula: XXXXXXXXX
-## * NOME NOME NOME NOME NOME     - Nº de Matrícula: XXXXXXXXX
-## * NOME NOME NOME NOME NOME     - Nº de Matrícula: XXXXXXXXX
-## * NOME NOME NOME NOME NOME     - Nº de Matrícula: XXXXXXXXX
-## * Lucas Malfacine Rodrigues    - Nº de Matrícula: 202422972
-## * Lucca de Andrade Vianna Braz - Nº de Matrícula: 202422924
+* NOME NOME NOME NOME NOME     - Nº de Matrícula: XXXXXXXXX
+* NOME NOME NOME NOME NOME     - Nº de Matrícula: XXXXXXXXX
+* NOME NOME NOME NOME NOME     - Nº de Matrícula: XXXXXXXXX
+* NOME NOME NOME NOME NOME     - Nº de Matrícula: XXXXXXXXX
+* Lucas Malfacine Rodrigues    - Nº de Matrícula: 202422972
+* Lucca de Andrade Vianna Braz - Nº de Matrícula: 202422924
 
 
 ## Problema Real
