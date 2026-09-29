@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const targetVal = document.getElementById('notifyTarget').value;
       const newNotif = {
         title: document.getElementById('notifyTitle').value,
+        body: document.getElementById('notifyBody').value, // CORREÇÃO AQUI
         type: document.getElementById('notifyType').value,
         target: targetVal,
         readCount: 0,
@@ -95,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!document.getElementById('installBtn')) {
       const btn = document.createElement('button');
       btn.id = 'installBtn';
-      btn.textContent = ' Instalar CrecheNow';
+      btn.textContent = '📲 Instalar CrecheNow';
       btn.className = 'btn btn-sm btn-warning position-fixed bottom-0 start-50 translate-middle-x mb-3 shadow';
       btn.style.zIndex = '9999';
       btn.addEventListener('click', () => {
