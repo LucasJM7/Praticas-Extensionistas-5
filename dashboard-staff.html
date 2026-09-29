@@ -26,7 +26,7 @@
     <!-- Formulário de Novo Comunicado -->
     <div class="card shadow-sm border-0 mb-4">
       <div class="card-header bg-success text-white">
-        <h5 class="mb-0"> Novo Comunicado</h5>
+        <h5 class="mb-0">📢 Novo Comunicado</h5>
       </div>
       <div class="card-body">
         <form id="staffForm" class="needs-validation" novalidate>
@@ -82,9 +82,7 @@
                     <th>Data</th>
                   </tr>
                 </thead>
-                <tbody id="sent-notifications">
-                  <!-- Preenchido via JS -->
-                </tbody>
+                <tbody id="sent-notifications"></tbody>
               </table>
             </div>
           </div>
@@ -107,11 +105,36 @@
                     <th class="text-center">Ação</th>
                   </tr>
                 </thead>
-                <tbody id="parent-messages-list">
-                  <!-- Preenchido via JS -->
-                </tbody>
+                <tbody id="parent-messages-list"></tbody>
               </table>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Gerenciar Conteúdo Semanal (NOVO) -->
+    <div class="card shadow-sm border-0 mt-4">
+      <div class="card-header bg-info text-white">
+        <h5 class="mb-0">⚙️ Gerenciar Conteúdo Semanal</h5>
+      </div>
+      <div class="card-body">
+        <ul class="nav nav-tabs mb-3" id="staffEditTabs">
+          <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#edit-agenda" type="button">Editar Agenda</button></li>
+          <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#edit-cardapio" type="button">Editar Cardápio</button></li>
+        </ul>
+        <div class="tab-content">
+          <div class="tab-pane fade show active" id="edit-agenda">
+            <form id="agendaEditForm">
+              <div id="agendaInputsContainer"></div>
+              <button type="submit" class="btn btn-primary mt-2">💾 Salvar Agenda</button>
+            </form>
+          </div>
+          <div class="tab-pane fade" id="edit-cardapio">
+            <form id="cardapioEditForm">
+              <div id="cardapioInputsContainer"></div>
+              <button type="submit" class="btn btn-success mt-2">💾 Salvar Cardápio</button>
+            </form>
           </div>
         </div>
       </div>
