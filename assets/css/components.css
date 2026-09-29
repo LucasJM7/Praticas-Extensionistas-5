@@ -1,42 +1,31 @@
-.notify-card { border-left: 4px solid transparent; transition: all 0.2s ease; }
+.notify-card { 
+  border-left: 4px solid transparent; 
+  transition: all 0.2s ease; 
+  min-height: 150px; /* Garante tamanho mínimo uniforme no carrossel */
+}
 .notify-card.unread { background-color: #f8f9fa; border-left-color: var(--bs-warning); }
 .notify-card[data-type="saude"] { border-left-color: #dc3545; }
 .notify-card[data-type="pedagogico"] { border-left-color: #0d6efd; }
-.notify-card[data-type="reuniao"] { border-left-color: #198754; }
 
-.badge-priority { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; }
-.toast-container { z-index: 1100; }
+/* Ajuste para as setas do carrossel ficarem visíveis sobre o card */
+.carousel-control-prev, .carousel-control-next {
+  width: 5%;
+}
+.carousel-control-prev-icon, .carousel-control-next-icon {
+  width: 2rem;
+  height: 2rem;
+}
 
-.agenda-card {
-  border-left: 4px solid var(--bs-primary);
+.agenda-card, .cardapio-item {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.agenda-card:hover {
+.agenda-card:hover, .cardapio-item:hover {
   transform: translateX(4px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.05) !important;
 }
 
-.cardapio-item {
-  transition: transform 0.2s ease;
-}
-.cardapio-item:hover {
-  transform: translateX(4px);
-  background-color: #f8f9fa !important;
-}
-
-.nav-tabs .nav-link {
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-.card-header-tabs .nav-link {
-  border-radius: 0.375rem 0.375rem 0 0;
-}
-
-.table-warning {
-  background-color: rgba(255, 193, 7, 0.15) !important;
-}
-
-@media (max-width: 768px) {
-  .btn-group-sm .btn { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
-  .notify-card .card-body { padding: 0.75rem; }
+/* Garante que as colunas laterais ocupem a altura total sem estourar */
+.overflow-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
 }
