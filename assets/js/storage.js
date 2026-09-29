@@ -10,7 +10,7 @@ const CrecheNowStorage = (() => {
     },
     clear: () => localStorage.clear(),
     
-    // --- NOVOS MÉTODOS PARA O "BANCO DE DADOS" ---
+    // Métodos para o "Banco de Dados" Local
     getNotifications: () => CrecheNowStorage.get('crechenow_notifications') || [],
     addNotification: (notif) => {
       const notifs = CrecheNowStorage.getNotifications();
@@ -39,7 +39,6 @@ const CrecheNowStorage = (() => {
         CrecheNowStorage.set('crechenow_parent_messages', msgs);
       }
     },
-    // ----------------------------------------------
     
     queueAction: (action) => {
       const queue = CrecheNowStorage.get(QUEUE_KEY) || [];
