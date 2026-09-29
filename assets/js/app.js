@@ -6,6 +6,33 @@ document.addEventListener('DOMContentLoaded', () => {
     CrecheNowNotifications.initRealTimeSync();
   }
 
+  // Preenche formulários de edição se estiver no painel da creche
+  const fillEditForms = () => {
+    const agenda = CrecheNowStorage.getAgenda();
+    const agendaContainer = document.getElementById('agendaInputsContainer');
+    if (agendaContainer) {
+      agendaContainer.innerHTML = agenda.map((a, i) => `
+        <div class="row g-2 mb-2 align-items-end">
+          <div class="col-3"><input type="text" class="form-control form-control-sm" id="agendaDay${i+1}" value="${a.day}" required></div>
+          <div class="col-3"><input type="time" class="form-control form-control-sm" id="agendaTime${i+1}" value="${a.time}" required></div>
+          <div class="col-4"><input type="text" class="form-control form-control-sm" id="agendaTitle${i+1}" value="${a.title}" required></div>
+          <div class="col-2"><input type="text" class="form-control form-control-sm" id="agendaIcon${i+1}" value="${a.icon}" placeholder="Emoji"></div>
+        </div>
+      `).join('');
+    }
+
+    const cardapio = CrecheNowStorage.getCardapio();
+    const cardapioContainer = document.getElementById('cardapioInputsContainer');
+    if (cardapioContainer) {
+      cardapioContainer.innerHTML = cardapio.map((c, i) => `
+        <div class="row g-2 mb-2 align-items-center">
+          <div class="col-2"><input type="text" class="form-control form-control-sm" id="cardapioDay${i+1}" value="${c.day}" required></div>
+          <div class="col-10"><input type="text" class="form-control form-control-sm" id="cardapioMeal${i+1}" value="${c.meal}" required></div>
+        </div>
+      `).join('');
+    }
+  };
+
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
@@ -38,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const targetVal = document.getElementById('notifyTarget').value;
       const newNotif = {
         title: document.getElementById('notifyTitle').value,
-        body: document.getElementById('notifyBody').value, // CORREÇÃO AQUI
+        body: document.getElementById('notifyBody').value,
         type: document.getElementById('notifyType').value,
         target: targetVal,
         readCount: 0,
@@ -50,6 +77,42 @@ document.addEventListener('DOMContentLoaded', () => {
       staffForm.classList.remove('was-validated');
       CrecheNowNotifications.showToast('Comunicado enviado com sucesso!');
       CrecheNowNotifications.renderSent();
+    });
+  }
+
+  // Salvar Agenda editada
+  const agendaForm = document.getElementById('agendaEditForm');
+  if (agendaForm) {
+    agendaForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const newAgenda = [];
+      for(let i=1; i<=5; i++) {
+        newAgenda.push({
+          day: document.getElementById(`agendaDay${i}`).value,
+          time: document.getElementById(`agendaTime${i}`).value,
+          title: document.getElementById(`agendaTitle${i}`).value,
+          icon: document.getElementById(`agendaIcon${i}`).value
+        });
+      }
+      CrecheNowStorage.setAgenda(newAgenda);
+      CrecheNowNotifications.showToast('Agenda atualizada!');
+    });
+  }
+
+  // Salvar Cardápio editado
+  const cardapioForm = document.getElementById('cardapioEditForm');
+  if (cardapioForm) {
+    cardapioForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const newCardapio = [];
+      for(let i=1; i<=5; i++) {
+        newCardapio.push({
+          day: document.getElementById(`cardapioDay${i}`).value,
+          meal: document.getElementById(`cardapioMeal${i}`).value
+        });
+      }
+      CrecheNowStorage.setCardapio(newCardapio);
+      CrecheNowNotifications.showToast('Cardápio atualizado!');
     });
   }
 
@@ -113,8 +176,21 @@ document.addEventListener('DOMContentLoaded', () => {
   if (window.location.pathname.includes('dashboard')) {
     CrecheNowNotifications.renderFeed();
     CrecheNowNotifications.renderAgenda();
+    CrecheNowNotifications.renderCardapio();
     CrecheNowNotifications.renderSent();
     CrecheNowNotifications.renderParentMessages();
+    fillEditForms(); // Preenche os formulários de edição da creche
     setInterval(CrecheNowStorage.processQueue, 60000);
   }
+
+  // Atalho de teclado para desenvolvedor: Ctrl + Shift + L para limpar tudo
+  document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'l') {
+      e.preventDefault();
+      if (confirm('⚠️ MODO TESTE: Limpar todos os dados salvos e recarregar?')) {
+        localStorage.clear();
+        window.location.reload();
+      }
+    }
+  });
 });
