@@ -25,8 +25,7 @@
   <main class="dashboard-main">
     <div class="dashboard-row">
       
-      <!-- COLUNA 1: AGENDA (25%) -->
-      <div class="side-column" style="width: 25%;">
+      <div class="side-column">
         <div class="card shadow-sm border-0">
           <div class="card-header bg-primary text-white py-2">
             <h5 class="mb-0 fs-6">📅 Agenda Semanal</h5>
@@ -35,7 +34,7 @@
         </div>
       </div>
 
-      <div class="center-column" style="width: 50%;">
+      <div class="center-column">
         
         <div class="card shadow-sm border-0" style="height: 200px; flex-shrink: 0;">
           <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
@@ -48,10 +47,8 @@
           </div>
           <div class="notifications-carousel-wrapper" id="notifications-carousel" data-bs-ride="carousel" data-bs-interval="5000">
             <div class="carousel-inner" id="carousel-inner-notifs"></div>
-            
             <div class="carousel-edge carousel-edge-left"></div>
             <div class="carousel-edge carousel-edge-right"></div>
-            
             <button class="carousel-control-prev" type="button" data-bs-target="#notifications-carousel" data-bs-slide="prev">
               <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             </button>
@@ -78,13 +75,13 @@
           </button>
           <button class="btn btn-outline-secondary d-flex align-items-center gap-2 position-relative" id="openInboxModalBtn">
             <span>📨</span> Mensagens
-            <span class="badge-count" id="inboxBadge" style="display:none; position: absolute; top: -4px; right: -4px; background: #dc3545; color: white; font-size: 0.65rem; padding: 2px 5px; border-radius: 10px; font-weight: bold;">0</span>
+            <span id="inboxBadge" style="display:none; position: absolute; top: -4px; right: -4px; background: #dc3545; color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px; font-weight: bold;">0</span>
           </button>
         </div>
 
       </div>
 
-      <div class="side-column" style="width: 25%;">
+      <div class="side-column">
         <div class="card shadow-sm border-0">
           <div class="card-header bg-success text-white py-2">
             <h5 class="mb-0 fs-6">🍽️ Cardápio Semanal</h5>
