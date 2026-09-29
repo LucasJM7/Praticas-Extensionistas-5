@@ -1,9 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Inicializa módulos
   CrecheNowAuth.init();
   CrecheNowAuth.checkSession();
+  
+  if (typeof CrecheNowNotifications !== 'undefined') {
+    CrecheNowNotifications.initRealTimeSync();
+  }
 
-  // Roteamento de formulários
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
@@ -32,26 +34,46 @@ document.addEventListener('DOMContentLoaded', () => {
     staffForm.addEventListener('submit', (e) => {
       e.preventDefault();
       if (!staffForm.checkValidity()) { staffForm.classList.add('was-validated'); return; }
-      const data = {
+      
+      const targetVal = document.getElementById('notifyTarget').value;
+      const newNotif = {
         title: document.getElementById('notifyTitle').value,
         type: document.getElementById('notifyType').value,
-        target: document.getElementById('notifyTarget').value,
-        date: new Date(),
+        target: targetVal,
         readCount: 0,
-        targetCount: document.getElementById('notifyTarget').value === 'all' ? 48 : 24
+        targetCount: targetVal === 'all' ? 48 : 24
       };
-      const sent = CrecheNowStorage.get('sent_notifications') || [];
-      sent.unshift(data);
-      CrecheNowStorage.set('sent_notifications', sent);
-      staffForm.reset(); staffForm.classList.remove('was-validated');
+      
+      CrecheNowStorage.addNotification(newNotif);
+      staffForm.reset(); 
+      staffForm.classList.remove('was-validated');
       CrecheNowNotifications.showToast('Comunicado enviado com sucesso!');
       CrecheNowNotifications.renderSent();
     });
   }
 
+  const parentMsgForm = document.getElementById('parentMsgForm');
+  if (parentMsgForm) {
+    parentMsgForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!parentMsgForm.checkValidity()) { parentMsgForm.classList.add('was-validated'); return; }
+      
+      const session = CrecheNowStorage.get('session');
+      const newMsg = {
+        parentName: session ? session.name : 'Responsável',
+        message: document.getElementById('parentMessage').value,
+        childName: document.getElementById('childName').value
+      };
+      
+      CrecheNowStorage.addMessage(newMsg);
+      parentMsgForm.reset();
+      parentMsgForm.classList.remove('was-validated');
+      CrecheNowNotifications.showToast('Recado enviado para a creche!');
+    });
+  }
+
   document.getElementById('logoutBtn')?.addEventListener('click', CrecheNowAuth.logout);
 
-  // Filtros
   document.querySelectorAll('[data-filter]')?.forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
@@ -60,54 +82,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Registra SW
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js')
       .then(() => console.log('SW registrado'))
       .catch(err => console.error('SW falha:', err));
   }
 
-  // Instalação PWA
   let deferredPrompt;
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     if (!document.getElementById('installBtn')) {
       const btn = document.createElement('button');
-btn.id = 'installBtn';
-    btn.textContent = '📲 Instalar Creche';
-    btn.className = 'btn btn-sm';
-    Object.assign(btn.style, {
-      position: 'fixed',
-      bottom: '20px',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      width: 'auto',
-      padding: '10px 16px',
-      borderRadius: '20px',
-      backgroundColor: '#ff9800',
-      color: '#fff',
-      border: 'none',
-      boxShadow: '0 4px 10px rgba(0,0,0,0.2)',
-      zIndex: '9999',
-      cursor: 'pointer'
-    });
-    btn.addEventListener('click', () => {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((res) => {
-        if (res.outcome === 'accepted') btn.remove();
-        deferredPrompt = null;
+      btn.id = 'installBtn';
+      btn.textContent = '📲 Instalar CrecheNow';
+      btn.className = 'btn btn-sm btn-warning position-fixed bottom-0 start-50 translate-middle-x mb-3 shadow';
+      btn.style.zIndex = '9999';
+      btn.addEventListener('click', () => {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((res) => {
+          if (res.outcome === 'accepted') btn.remove();
+          deferredPrompt = null;
+        });
       });
-    });
       document.body.appendChild(btn);
     }
   });
 
-  // Renderizações iniciais
   if (window.location.pathname.includes('dashboard')) {
     CrecheNowNotifications.renderFeed();
     CrecheNowNotifications.renderAgenda();
     CrecheNowNotifications.renderSent();
-    setInterval(CrecheNowStorage.processQueue, 60000); // Sync a cada 1min
+    CrecheNowNotifications.renderParentMessages(); // Renderiza novos recados
+    setInterval(CrecheNowStorage.processQueue, 60000);
   }
 });
