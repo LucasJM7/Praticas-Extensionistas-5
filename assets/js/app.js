@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!document.getElementById('installBtn')) {
       const btn = document.createElement('button');
       btn.id = 'installBtn';
-      btn.textContent = '📲 Instalar CrecheNow';
+      btn.textContent = ' Instalar CrecheNow';
       btn.className = 'btn btn-sm btn-warning position-fixed bottom-0 start-50 translate-middle-x mb-3 shadow';
       btn.style.zIndex = '9999';
       btn.addEventListener('click', () => {
@@ -113,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     CrecheNowNotifications.renderFeed();
     CrecheNowNotifications.renderAgenda();
     CrecheNowNotifications.renderSent();
-    CrecheNowNotifications.renderParentMessages(); // Renderiza novos recados
+    CrecheNowNotifications.renderParentMessages();
     setInterval(CrecheNowStorage.processQueue, 60000);
   }
 });
