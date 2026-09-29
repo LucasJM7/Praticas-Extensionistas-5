@@ -1,15 +1,17 @@
 const CrecheNowAuth = (() => {
   const VALID_USERS = [
-    { email: 'pai@email.com', senha: '123456', role: 'parent', name: 'Responsável' },
-    { email: 'creche@municipal.gov', senha: 'staff123', role: 'staff', name: 'Coordenação' }
+    { email: 'pai@email.com', senha: '123456', role: 'parent', name: 'Responsável (João)' },
+    { email: 'secretaria@municipal.gov', senha: 'admin123', role: 'secretary', name: 'Secretaria Geral' },
+    { email: 'prof@municipal.gov', senha: 'prof123', role: 'teacher', name: 'Prof. Ana', class: 'A' }
   ];
 
   return {
     init: () => {
       const session = CrecheNowStorage.get('session');
       if (!session) return;
-      if (window.location.pathname.includes('index.html') || window.location.pathname === '/') {
-        window.location.href = session.role === 'parent' ? 'dashboard-parent.html' : 'dashboard-staff.html';
+      if (window.location.pathname.includes('index.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/')) {
+        const roleMap = { 'parent': 'dashboard-parent.html', 'secretary': 'dashboard-staff.html', 'teacher': 'dashboard-teacher.html' };
+        window.location.href = roleMap[session.role] || 'index.html';
       }
     },
     login: (email, senha, lgpdConsent) => {
@@ -17,7 +19,7 @@ const CrecheNowAuth = (() => {
       if (!user) return { success: false, msg: 'Credenciais inválidas.' };
       if (!lgpdConsent) return { success: false, msg: 'Aceite a política de privacidade.' };
 
-      CrecheNowStorage.set('session', { role: user.role, name: user.name, email: user.email });
+      CrecheNowStorage.set('session', { role: user.role, name: user.name, email: user.email, class: user.class || null });
       return { success: true };
     },
     logout: () => {
