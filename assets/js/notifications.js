@@ -1,10 +1,10 @@
 const CrecheNowNotifications = (() => {
   const agenda = [
-    { day: 'Segunda', time: '08:00', title: 'Roda de conversa e música', icon: '🎵' },
+    { day: 'Segunda', time: '08:00', title: 'Roda de conversa e música', icon: '' },
     { day: 'Terça', time: '10:30', title: 'Atividade psicomotora no parque', icon: '🌳' },
     { day: 'Quarta', time: '14:00', title: 'Soneca & Contação de histórias', icon: '📚' },
     { day: 'Quinta', time: '09:00', title: 'Artes e pintura com guache', icon: '🎨' },
-    { day: 'Sexta', time: '15:00', title: 'Dia da Família (Mural coletivo)', icon: '👨‍👩‍👧‍👦' }
+    { day: 'Sexta', time: '15:00', title: 'Dia da Família (Mural coletivo)', icon: '👨‍‍👧‍👦' }
   ];
 
   return {
@@ -44,7 +44,7 @@ const CrecheNowNotifications = (() => {
       document.querySelectorAll('.mark-read').forEach(btn => {
         btn.addEventListener('click', () => {
           CrecheNowStorage.markAsRead(parseInt(btn.dataset.id));
-          CrecheNowNotifications.renderFeed(filter); // Re-renderiza
+          CrecheNowNotifications.renderFeed(filter);
           CrecheNowNotifications.showToast('Notificação marcada como lida.');
         });
       });
@@ -68,7 +68,7 @@ const CrecheNowNotifications = (() => {
     renderSent: () => {
       const tbody = document.getElementById('sent-notifications');
       if (!tbody) return;
-      const notifs = CrecheNowStorage.getNotifications().filter(n => n.type !== 'mensagem_pai'); // Filtra só os enviados pela creche
+      const notifs = CrecheNowStorage.getNotifications().filter(n => n.type !== 'mensagem_pai');
       tbody.innerHTML = notifs.length ? notifs.map(s => `
         <tr>
           <td>${s.title}</td>
@@ -85,10 +85,10 @@ const CrecheNowNotifications = (() => {
       const msgs = CrecheNowStorage.getMessages();
       tbody.innerHTML = msgs.length ? msgs.map(m => `
         <tr class="${m.read ? '' : 'table-warning'}">
-          <td>${m.parentName}</td>
+          <td>${m.parentName}<br><small class="text-muted">Criança: ${m.childName}</small></td>
           <td>${m.message}</td>
           <td><small>${new Date(m.date).toLocaleString('pt-BR')}</small></td>
-          <td>
+          <td class="text-center">
             ${!m.read ? `<button class="btn btn-sm btn-success mark-msg-read" data-id="${m.id}">✓</button>` : '<span class="text-muted small">Lido</span>'}
           </td>
         </tr>
@@ -105,8 +105,7 @@ const CrecheNowNotifications = (() => {
     showToast: (msg, type = 'success') => {
       const container = document.getElementById('toast-container') || document.body;
       const toastEl = document.createElement('div');
-      toastEl.className = `toast align-items-center text-bg-${type} border-0 show position-fixed bottom-0 end-0 m-3`;
-      toastEl.style.zIndex = '9999';
+      toastEl.className = `toast align-items-center text-bg-${type} border-0 show`;
       toastEl.innerHTML = `<div class="d-flex"><div class="toast-body">${msg}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="this.parentElement.parentElement.remove()"></button></div>`;
       container.appendChild(toastEl);
       setTimeout(() => toastEl.remove(), 4000);
@@ -120,7 +119,6 @@ const CrecheNowNotifications = (() => {
       return new Date(date).toLocaleDateString('pt-BR');
     },
 
-    // MÁGICA DO TEMPO REAL: Ouve mudanças no localStorage de outras abas
     initRealTimeSync: () => {
       window.addEventListener('storage', (e) => {
         if (e.key === 'crechenow_notifications') CrecheNowNotifications.renderFeed();
