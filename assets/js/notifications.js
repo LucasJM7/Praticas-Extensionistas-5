@@ -1,6 +1,5 @@
 const CrecheNowNotifications = (() => {
 
-  // ===== HELPERS DE MODAL =====
   const openModal = (id) => document.getElementById(id)?.classList.add('active');
   const closeModal = (id) => document.getElementById(id)?.classList.remove('active');
 
@@ -15,7 +14,6 @@ const CrecheNowNotifications = (() => {
     });
   };
 
-  // ===== CARROSSEL DE COMUNICADOS =====
   const renderFeed = (filter = 'all') => {
     const container = document.getElementById('carousel-inner-notifs');
     if (!container) return;
@@ -59,7 +57,6 @@ const CrecheNowNotifications = (() => {
     });
   };
 
-  // ===== AGENDA E CARDÁPIO =====
   const renderAgenda = () => {
     const container = document.getElementById('agenda-list');
     if (!container) return;
@@ -87,7 +84,52 @@ const CrecheNowNotifications = (() => {
     `).join('');
   };
 
-  // ===== ROTINA DIÁRIA (PAIS) =====
+  const renderAgendaEditor = () => {
+    const container = document.getElementById('agendaEditorContainer');
+    if (!container) return;
+    const agenda = CrecheNowStorage.getAgenda();
+    container.innerHTML = agenda.map((a, i) => `
+      <div class="editor-item" data-index="${i}">
+        <input type="text" class="form-control form-control-sm" style="width: 80px;" value="${a.day}" placeholder="Dia" data-field="day">
+        <input type="time" class="form-control form-control-sm" style="width: 120px;" value="${a.time}" data-field="time">
+        <input type="text" class="form-control form-control-sm flex-grow-1" value="${a.title}" placeholder="Atividade" data-field="title">
+        <input type="text" class="form-control form-control-sm" style="width: 60px;" value="${a.icon}" placeholder="Emoji" data-field="icon">
+        <button type="button" class="btn btn-danger btn-sm btn-remove" onclick="CrecheNowNotifications.removeAgendaItem(${i})">🗑️</button>
+      </div>
+    `).join('');
+  };
+
+  const renderCardapioEditor = () => {
+    const container = document.getElementById('cardapioEditorContainer');
+    if (!container) return;
+    const cardapio = CrecheNowStorage.getCardapio();
+    container.innerHTML = cardapio.map((c, i) => `
+      <div class="editor-item" data-index="${i}">
+        <input type="text" class="form-control form-control-sm" style="width: 80px;" value="${c.day}" placeholder="Dia" data-field="day">
+        <input type="text" class="form-control form-control-sm flex-grow-1" value="${c.meal}" placeholder="Refeição" data-field="meal">
+        <button type="button" class="btn btn-danger btn-sm btn-remove" onclick="CrecheNowNotifications.removeCardapioItem(${i})">🗑️</button>
+      </div>
+    `).join('');
+  };
+
+  const removeAgendaItem = (index) => {
+    const agenda = CrecheNowStorage.getAgenda();
+    agenda.splice(index, 1);
+    CrecheNowStorage.setAgenda(agenda);
+    renderAgendaEditor();
+    renderAgenda();
+    CrecheNowNotifications.showToast('Item removido da agenda.');
+  };
+
+  const removeCardapioItem = (index) => {
+    const cardapio = CrecheNowStorage.getCardapio();
+    cardapio.splice(index, 1);
+    CrecheNowStorage.setCardapio(cardapio);
+    renderCardapioEditor();
+    renderCardapio();
+    CrecheNowNotifications.showToast('Item removido do cardápio.');
+  };
+
   const renderRoutineForParent = (studentId) => {
     const todayContainer = document.getElementById('routine-today');
     const historyContainer = document.getElementById('routine-history');
@@ -98,11 +140,11 @@ const CrecheNowNotifications = (() => {
 
     if (!todayRoutine) {
       todayContainer.innerHTML = '<p class="text-muted text-center mt-4">Nenhum registro de rotina para hoje ainda.</p>';
+      todayContainer.onclick = null;
       if (historyContainer) historyContainer.innerHTML = '';
       return;
     }
 
-    // Se o aluno faltou
     if (!todayRoutine.attendance) {
       todayContainer.innerHTML = `
         <div class="absent-message">
@@ -112,6 +154,7 @@ const CrecheNowNotifications = (() => {
           </div>
         </div>
       `;
+      todayContainer.onclick = null;
       if (historyContainer) historyContainer.innerHTML = '';
       return;
     }
@@ -121,7 +164,6 @@ const CrecheNowNotifications = (() => {
       ? '<span class="text-success fw-bold">✅ Sim</span>' 
       : '<span class="text-danger fw-bold">❌ Não</span>';
     
-    // Preview (sem comentário)
     todayContainer.innerHTML = `
       <div class="routine-grid">
         <div class="routine-item">Comportamento: ${statusIcon(q.behaved)}</div>
@@ -133,7 +175,6 @@ const CrecheNowNotifications = (() => {
       ${todayRoutine.comment ? `<div class="click-hint">👆 Clique para ver detalhes</div>` : ''}
     `;
 
-    // Clique para expandir
     todayContainer.onclick = () => {
       const modalContent = document.getElementById('routineModalContent');
       modalContent.innerHTML = `
@@ -160,7 +201,6 @@ const CrecheNowNotifications = (() => {
     };
     todayContainer.style.cursor = todayRoutine.comment ? 'pointer' : 'default';
 
-    // Histórico
     if (historyContainer) {
       const historyRoutines = routines.slice(1);
       if (historyRoutines.length > 0) {
@@ -177,7 +217,6 @@ const CrecheNowNotifications = (() => {
     }
   };
 
-  // ===== PAINEL DO PROFESSOR =====
   const renderTeacherDashboard = () => {
     const select = document.getElementById('routineStudentSelect');
     const historyDiv = document.getElementById('teacher-routine-history');
@@ -192,7 +231,6 @@ const CrecheNowNotifications = (() => {
         students.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
     }
 
-    // Lista de alunos da turma com status de hoje
     if (studentsList) {
       const todayStr = new Date().toDateString();
       studentsList.innerHTML = students.map(s => {
@@ -201,13 +239,12 @@ const CrecheNowNotifications = (() => {
         if (todayRoutine) {
           status = todayRoutine.attendance 
             ? '<span class="text-success">✅</span>' 
-            : '<span class="text-danger"></span>';
+            : '<span class="text-danger">❌</span>';
         }
         return `<tr><td class="small">${s.name}</td><td>${status}</td></tr>`;
       }).join('');
     }
 
-    // Histórico de registros
     if (historyDiv) {
       const allRoutines = CrecheNowStorage.getRoutines()
         .filter(r => r.teacherEmail === session.email)
@@ -230,7 +267,6 @@ const CrecheNowNotifications = (() => {
     }
   };
 
-  // ===== GESTÃO DE ALUNOS (SECRETARIA) =====
   const renderStudentManagement = () => {
     const tbody = document.getElementById('students-list');
     if (!tbody) return;
@@ -264,14 +300,12 @@ const CrecheNowNotifications = (() => {
     }
   };
 
-  // ===== MENSAGENS (PAIS E SECRETARIA) =====
   const renderInbox = (tab = 'received') => {
     const container = document.getElementById('inbox-content');
     if (!container) return;
     const session = CrecheNowStorage.get('session');
     
     if (tab === 'received') {
-      // Pais veem comunicados; Secretaria vê recados dos pais
       let items = [];
       if (session?.role === 'parent') {
         items = CrecheNowStorage.getNotifications();
@@ -290,7 +324,6 @@ const CrecheNowNotifications = (() => {
         </div>
       `).join('') : '<p class="text-center text-muted">Nenhuma mensagem recebida.</p>';
     } else {
-      // Mensagens enviadas (apenas pais têm)
       const sent = CrecheNowStorage.getMessages().filter(m => m.parentEmail === session?.email);
       container.innerHTML = sent.length ? sent.map(m => `
         <div class="message-item sent">
@@ -348,7 +381,6 @@ const CrecheNowNotifications = (() => {
     }
   };
 
-  // ===== HISTÓRICO DE ENVIOS (SECRETARIA) =====
   const renderSent = () => {
     const tbody = document.getElementById('sent-notifications');
     if (!tbody) return;
@@ -362,7 +394,6 @@ const CrecheNowNotifications = (() => {
     `).join('') : '<tr><td colspan="3" class="text-center text-muted py-3 small">Nenhum envio registrado</td></tr>';
   };
 
-  // ===== TOAST E UTILS =====
   const showToast = (msg, type = 'success') => {
     const container = document.getElementById('toast-container') || document.body;
     const toastEl = document.createElement('div');
@@ -399,12 +430,22 @@ const CrecheNowNotifications = (() => {
         if (session?.role === 'teacher') renderTeacherDashboard();
       }
       if (e.key === 'crechenow_students') renderStudentManagement();
+      if (e.key === 'crechenow_agenda') {
+        renderAgenda();
+        renderAgendaEditor();
+      }
+      if (e.key === 'crechenow_cardapio') {
+        renderCardapio();
+        renderCardapioEditor();
+      }
     });
   };
 
   return {
     initModalHandlers,
     renderFeed, renderAgenda, renderCardapio,
+    renderAgendaEditor, renderCardapioEditor,
+    removeAgendaItem, removeCardapioItem,
     renderRoutineForParent, renderTeacherDashboard,
     renderStudentManagement, changeStudentClass, deleteStudent,
     renderInbox, renderParentMessagesForStaff, updateInboxBadge,
