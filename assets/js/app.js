@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('addAgendaItemBtn')?.addEventListener('click', () => {
       const agenda = CrecheNowStorage.getAgenda();
-      agenda.push({ day: 'Seg', time: '08:00', title: 'Nova atividade', icon: '📌' });
+      agenda.push({ day: 'Seg', time: '08:00', title: 'Nova atividade', icon: '📌', date: '' });
       CrecheNowStorage.setAgenda(agenda);
       CrecheNowNotifications.renderAgendaEditor();
     });
@@ -98,10 +98,11 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const items = document.querySelectorAll('#agendaEditorContainer .editor-item');
       const newAgenda = Array.from(items).map(item => ({
-        day: item.querySelector('[data-field="day"]').value,
+        day: item.querySelector('.day-preview').textContent,
         time: item.querySelector('[data-field="time"]').value,
         title: item.querySelector('[data-field="title"]').value,
-        icon: item.querySelector('[data-field="icon"]').value
+        icon: item.querySelector('.icon-preview').textContent,
+        date: item.querySelector('.agenda-date').value
       }));
       CrecheNowStorage.setAgenda(newAgenda);
       CrecheNowNotifications.showToast('Agenda atualizada!');
@@ -120,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('addCardapioItemBtn')?.addEventListener('click', () => {
       const cardapio = CrecheNowStorage.getCardapio();
-      cardapio.push({ day: 'Seg', meal: 'Nova refeição' });
+      cardapio.push({ day: 'Seg', meal: 'Nova refeição', date: '' });
       CrecheNowStorage.setCardapio(cardapio);
       CrecheNowNotifications.renderCardapioEditor();
     });
@@ -129,8 +130,9 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       const items = document.querySelectorAll('#cardapioEditorContainer .editor-item');
       const newCardapio = Array.from(items).map(item => ({
-        day: item.querySelector('[data-field="day"]').value,
-        meal: item.querySelector('[data-field="meal"]').value
+        day: item.querySelector('.day-preview').textContent,
+        meal: item.querySelector('[data-field="meal"]').value,
+        date: item.querySelector('.cardapio-date').value
       }));
       CrecheNowStorage.setCardapio(newCardapio);
       CrecheNowNotifications.showToast('Cardápio atualizado!');
@@ -142,6 +144,21 @@ document.addEventListener('DOMContentLoaded', () => {
   if (teacherRoutineForm) {
     document.getElementById('teacherClassDisplay').textContent = session?.class || '';
     CrecheNowNotifications.renderTeacherDashboard();
+
+    // Mostrar/esconder perguntas baseado na presença
+    const attendanceCheckbox = document.getElementById('routineAttendance');
+    const questionsContainer = document.getElementById('routineQuestionsContainer');
+    
+    const toggleQuestions = () => {
+      if (attendanceCheckbox.checked) {
+        questionsContainer.style.display = 'block';
+      } else {
+        questionsContainer.style.display = 'none';
+      }
+    };
+    
+    attendanceCheckbox.addEventListener('change', toggleQuestions);
+    toggleQuestions(); // estado inicial
 
     teacherRoutineForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -156,24 +173,75 @@ document.addEventListener('DOMContentLoaded', () => {
       const newRoutine = {
         studentId: studentId,
         teacherEmail: session.email,
-        attendance: document.getElementById('routineAttendance').checked,
-        questions: {
+        attendance: attendanceCheckbox.checked,
+        questions: attendanceCheckbox.checked ? {
           behaved: getRadio('q1'),
           attention: getRadio('q2'),
           homework: getRadio('q3'),
           peers: getRadio('q4'),
           food: getRadio('q5')
-        },
-        comment: document.getElementById('routineComment').value
+        } : null,
+        comment: attendanceCheckbox.checked ? document.getElementById('routineComment').value : ''
       };
 
       CrecheNowStorage.addRoutine(newRoutine);
       teacherRoutineForm.reset();
-      document.getElementById('routineAttendance').checked = true;
+      attendanceCheckbox.checked = true;
+      toggleQuestions();
       CrecheNowNotifications.showToast('Rotina registrada com sucesso!');
       CrecheNowNotifications.renderTeacherDashboard();
     });
   }
+
+  const teacherMsgForm = document.getElementById('teacherMsgForm');
+  if (teacherMsgForm) {
+    teacherMsgForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!teacherMsgForm.checkValidity()) { teacherMsgForm.classList.add('was-validated'); return; }
+      
+      const studentId = parseInt(document.getElementById('teacherMsgStudent').value);
+      const student = CrecheNowStorage.getStudents().find(s => s.id === studentId);
+      
+      CrecheNowStorage.addMessage({
+        parentName: 'Prof. ' + session.name,
+        teacherEmail: session.email,
+        message: document.getElementById('teacherMessage').value,
+        childName: student ? student.name : '',
+        childId: studentId,
+        isTeacherMessage: true
+      });
+      teacherMsgForm.reset();
+      teacherMsgForm.classList.remove('was-validated');
+      CrecheNowNotifications.showToast('Recado enviado ao responsável!');
+      CrecheNowNotifications.closeModal('teacherMsgModal');
+    });
+  }
+
+  document.getElementById('openTeacherMsgModalBtn')?.addEventListener('click', () => {
+    CrecheNowNotifications.openModal('teacherMsgModal');
+  });
+
+  document.getElementById('openTeacherInboxModalBtn')?.addEventListener('click', () => {
+    CrecheNowNotifications.renderTeacherInbox('received');
+    // Marcar todas como lidas ao abrir
+    const session = CrecheNowStorage.get('session');
+    const myStudents = CrecheNowStorage.getStudents().filter(s => s.class === session.class);
+    const myStudentIds = myStudents.map(s => s.id);
+    const msgs = CrecheNowStorage.getMessages().filter(m => 
+      myStudentIds.includes(parseInt(m.childId)) && !m.read
+    );
+    msgs.forEach(m => CrecheNowStorage.markMessageAsRead(m.id));
+    CrecheNowNotifications.updateTeacherInboxBadge();
+    CrecheNowNotifications.openModal('teacherInboxModal');
+  });
+
+  document.querySelectorAll('[data-teacher-inbox-tab]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-teacher-inbox-tab]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      CrecheNowNotifications.renderTeacherInbox(btn.dataset.teacherInboxTab);
+    });
+  });
 
   if (session?.role === 'parent') {
     const student = CrecheNowStorage.getStudents().find(s => s.parentEmail === session.email) || CrecheNowStorage.getStudents()[0];
@@ -188,6 +256,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('openInboxModalBtn')?.addEventListener('click', () => {
       CrecheNowNotifications.renderInbox('received');
+      // Marcar todas como lidas ao abrir
+      const notifs = CrecheNowStorage.getNotifications().filter(n => !n.read);
+      notifs.forEach(n => CrecheNowStorage.markAsRead(n.id));
+      CrecheNowNotifications.updateInboxBadge();
       CrecheNowNotifications.openModal('inboxModal');
     });
 
@@ -210,11 +282,14 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         if (!parentMsgForm.checkValidity()) { parentMsgForm.classList.add('was-validated'); return; }
         
+        const student = CrecheNowStorage.getStudents().find(s => s.name === document.getElementById('childName').value);
+        
         CrecheNowStorage.addMessage({
           parentName: session.name,
           parentEmail: session.email,
           message: document.getElementById('parentMessage').value,
-          childName: document.getElementById('childName').value
+          childName: document.getElementById('childName').value,
+          childId: student ? student.id : null
         });
         parentMsgForm.reset();
         parentMsgForm.classList.remove('was-validated');
@@ -269,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'l') {
       e.preventDefault();
-      if (confirm('⚠️ MODO TESTE: Limpar todos os dados salvos e recarregar?')) {
+      if (confirm('️ MODO TESTE: Limpar todos os dados salvos e recarregar?')) {
         localStorage.clear();
         window.location.reload();
       }
