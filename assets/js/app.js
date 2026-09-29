@@ -89,9 +89,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('addAgendaItemBtn')?.addEventListener('click', () => {
       const agenda = CrecheNowStorage.getAgenda();
-      agenda.push({ day: 'Seg', time: '08:00', title: 'Nova atividade', icon: '📌', date: '' });
+      const today = new Date().toISOString().split('T')[0];
+      const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+      const todayWeekday = days[new Date().getDay()];
+      agenda.push({ 
+        day: todayWeekday, 
+        time: '08:00', 
+        title: 'Nova atividade', 
+        icon: '🎵', 
+        date: today 
+      });
       CrecheNowStorage.setAgenda(agenda);
       CrecheNowNotifications.renderAgendaEditor();
+      CrecheNowNotifications.syncCardapioWithAgenda();
     });
 
     agendaEditorForm.addEventListener('submit', (e) => {
@@ -106,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }));
       CrecheNowStorage.setAgenda(newAgenda);
       CrecheNowNotifications.showToast('Agenda atualizada!');
+      CrecheNowNotifications.syncCardapioWithAgenda();
       CrecheNowNotifications.closeModal('agendaEditorModal');
     });
   }
@@ -121,7 +132,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('addCardapioItemBtn')?.addEventListener('click', () => {
       const cardapio = CrecheNowStorage.getCardapio();
-      cardapio.push({ day: 'Seg', meal: 'Nova refeição', date: '' });
+      const today = new Date().toISOString().split('T')[0];
+      const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+      const todayWeekday = days[new Date().getDay()];
+      cardapio.push({ 
+        day: todayWeekday, 
+        meal: '', 
+        date: today 
+      });
       CrecheNowStorage.setCardapio(cardapio);
       CrecheNowNotifications.renderCardapioEditor();
     });
@@ -145,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('teacherClassDisplay').textContent = session?.class || '';
     CrecheNowNotifications.renderTeacherDashboard();
 
-    // Mostrar/esconder perguntas baseado na presença
     const attendanceCheckbox = document.getElementById('routineAttendance');
     const questionsContainer = document.getElementById('routineQuestionsContainer');
     
@@ -158,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     attendanceCheckbox.addEventListener('change', toggleQuestions);
-    toggleQuestions(); // estado inicial
+    toggleQuestions();
 
     teacherRoutineForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -223,7 +240,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('openTeacherInboxModalBtn')?.addEventListener('click', () => {
     CrecheNowNotifications.renderTeacherInbox('received');
-    // Marcar todas como lidas ao abrir
     const session = CrecheNowStorage.get('session');
     const myStudents = CrecheNowStorage.getStudents().filter(s => s.class === session.class);
     const myStudentIds = myStudents.map(s => s.id);
@@ -256,7 +272,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('openInboxModalBtn')?.addEventListener('click', () => {
       CrecheNowNotifications.renderInbox('received');
-      // Marcar todas como lidas ao abrir
       const notifs = CrecheNowStorage.getNotifications().filter(n => !n.read);
       notifs.forEach(n => CrecheNowStorage.markAsRead(n.id));
       CrecheNowNotifications.updateInboxBadge();
@@ -338,13 +353,14 @@ document.addEventListener('DOMContentLoaded', () => {
     CrecheNowNotifications.renderFeed();
     CrecheNowNotifications.renderAgenda();
     CrecheNowNotifications.renderCardapio();
+    CrecheNowNotifications.syncCardapioWithAgenda();
     setInterval(CrecheNowStorage.processQueue, 60000);
   }
 
   document.addEventListener('keydown', (e) => {
     if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'l') {
       e.preventDefault();
-      if (confirm('️ MODO TESTE: Limpar todos os dados salvos e recarregar?')) {
+      if (confirm('⚠️ MODO TESTE: Limpar todos os dados salvos e recarregar?')) {
         localStorage.clear();
         window.location.reload();
       }
