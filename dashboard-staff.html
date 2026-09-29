@@ -25,7 +25,7 @@
   <main class="dashboard-main">
     <div class="dashboard-row">
       
-      <div class="side-column" style="width: 33.333%;">
+      <div class="side-column">
         <div class="card shadow-sm border-0">
           <div class="card-header bg-dark text-white py-2">
             <h5 class="mb-0 fs-6">📢 Novo Comunicado</h5>
@@ -62,7 +62,7 @@
         </div>
       </div>
 
-      <div class="side-column" style="width: 33.333%;">
+      <div class="center-column">
         <div class="card shadow-sm border-0" style="flex: 1; min-height: 0;">
           <div class="card-header bg-white py-2">
             <h5 class="mb-0 fs-6">📋 Histórico de Envios</h5>
@@ -89,10 +89,10 @@
         </div>
       </div>
 
-      <div class="side-column" style="width: 33.333%;">
+      <div class="side-column">
         <div class="card shadow-sm border-0">
           <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fs-6"> Alunos</h5>
+            <h5 class="mb-0 fs-6">👥 Alunos</h5>
             <button class="btn btn-sm btn-light" id="openAddStudentBtn">+ Adicionar</button>
           </div>
           <div class="card-body p-0">
@@ -118,7 +118,7 @@
   <div class="modal-overlay" id="addStudentModal">
     <div class="modal-box">
       <button class="modal-close" data-close="addStudentModal">&times;</button>
-      <h4 class="mb-3">➕ Cadastrar Novo Aluno</h4>
+      <h4 class="mb-3"> Cadastrar Novo Aluno</h4>
       <form id="addStudentForm">
         <div class="mb-3">
           <label class="form-label fw-bold">Nome Completo</label>
@@ -143,7 +143,7 @@
   <div class="modal-overlay" id="parentMsgsModal">
     <div class="modal-box">
       <button class="modal-close" data-close="parentMsgsModal">&times;</button>
-      <h4 class="mb-3"> Recados dos Responsáveis</h4>
+      <h4 class="mb-3">📬 Recados dos Responsáveis</h4>
       <div id="parent-messages-list" style="max-height: 500px; overflow-y: auto;"></div>
     </div>
   </div>
@@ -151,11 +151,11 @@
   <div class="modal-overlay" id="agendaEditorModal">
     <div class="modal-box">
       <button class="modal-close" data-close="agendaEditorModal">&times;</button>
-      <h4 class="mb-3">📅 Editar Agenda Semanal</h4>
+      <h4 class="mb-3"> Editar Agenda Semanal</h4>
       <form id="agendaEditorForm">
         <div id="agendaEditorContainer"></div>
         <button type="button" class="btn btn-outline-primary btn-sm mb-3" id="addAgendaItemBtn">+ Adicionar Item</button>
-        <button type="submit" class="btn btn-primary w-100"> Salvar Agenda</button>
+        <button type="submit" class="btn btn-primary w-100">💾 Salvar Agenda</button>
       </form>
     </div>
   </div>
