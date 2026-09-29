@@ -1,12 +1,4 @@
 const CrecheNowNotifications = (() => {
-  const agenda = [
-    { day: 'Segunda', time: '08:00', title: 'Roda de conversa e música', icon: '' },
-    { day: 'Terça', time: '10:30', title: 'Atividade psicomotora no parque', icon: '🌳' },
-    { day: 'Quarta', time: '14:00', title: 'Soneca & Contação de histórias', icon: '📚' },
-    { day: 'Quinta', time: '09:00', title: 'Artes e pintura com guache', icon: '🎨' },
-    { day: 'Sexta', time: '15:00', title: 'Dia da Família (Mural coletivo)', icon: '👨‍‍👧‍👦' }
-  ];
-
   return {
     renderFeed: (filter = 'all') => {
       const container = document.getElementById('notifications-feed');
@@ -53,14 +45,26 @@ const CrecheNowNotifications = (() => {
     renderAgenda: () => {
       const container = document.getElementById('agenda-list');
       if (!container) return;
+      const agenda = CrecheNowStorage.getAgenda();
       container.innerHTML = agenda.map(a => `
-        <div class="agenda-card d-flex align-items-center p-3 mb-2 bg-white rounded shadow-sm">
-          <div class="agenda-icon me-3 fs-4">${a.icon}</div>
+        <div class="agenda-card d-flex align-items-center p-2 mb-2 bg-white rounded shadow-sm">
+          <div class="agenda-icon me-2 fs-5">${a.icon}</div>
           <div class="flex-grow-1">
-            <strong class="d-block text-primary">${a.title}</strong>
-            <small class="text-muted">${a.day}</small>
+            <strong class="d-block text-primary small">${a.title}</strong>
+            <small class="text-muted" style="font-size: 0.7rem;">${a.day} • ${a.time}</small>
           </div>
-          <div class="agenda-time-badge">${a.time}</div>
+        </div>
+      `).join('');
+    },
+
+    renderCardapio: () => {
+      const container = document.getElementById('cardapio-list');
+      if (!container) return;
+      const cardapio = CrecheNowStorage.getCardapio();
+      container.innerHTML = cardapio.map(c => `
+        <div class="cardapio-item d-flex align-items-start p-2 mb-2 bg-white rounded border-start border-4 border-success">
+          <div class="fw-bold text-success me-2 small" style="min-width: 35px;">${c.day}</div>
+          <div class="small text-muted">${c.meal}</div>
         </div>
       `).join('');
     },
@@ -123,6 +127,8 @@ const CrecheNowNotifications = (() => {
       window.addEventListener('storage', (e) => {
         if (e.key === 'crechenow_notifications') CrecheNowNotifications.renderFeed();
         if (e.key === 'crechenow_parent_messages') CrecheNowNotifications.renderParentMessages();
+        if (e.key === 'crechenow_agenda') CrecheNowNotifications.renderAgenda();
+        if (e.key === 'crechenow_cardapio') CrecheNowNotifications.renderCardapio();
       });
     }
   };
