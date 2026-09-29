@@ -23,9 +23,10 @@
   </nav>
 
   <main class="dashboard-main">
-    <div class="dashboard-row row">
+    <div class="dashboard-row">
       
-      <div class="col-lg-3 side-column">
+      <!-- COLUNA 1: AGENDA (25%) -->
+      <div class="side-column" style="width: 25%;">
         <div class="card shadow-sm border-0">
           <div class="card-header bg-primary text-white py-2">
             <h5 class="mb-0 fs-6">📅 Agenda Semanal</h5>
@@ -34,9 +35,9 @@
         </div>
       </div>
 
-      <div class="col-lg-6 center-column">
+      <div class="center-column" style="width: 50%;">
         
-        <div class="card shadow-sm border-0 flex-shrink-0">
+        <div class="card shadow-sm border-0" style="height: 200px; flex-shrink: 0;">
           <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fs-6">📢 Comunicados</h5>
             <div class="btn-group btn-group-sm">
@@ -60,7 +61,7 @@
           </div>
         </div>
 
-        <div class="card shadow-sm border-0 routine-card-fixed">
+        <div class="card shadow-sm border-0 routine-card-fixed" style="flex-shrink: 0;">
           <div class="card-header bg-success text-white py-2 d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fs-6">👶 Rotina de Hoje</h5>
             <button class="btn btn-sm btn-light text-success fw-bold" id="toggleRoutineHistory">Ver Histórico</button>
@@ -71,22 +72,22 @@
           <div id="routine-history" class="d-none border-top p-3" style="max-height: 200px; overflow-y: auto;"></div>
         </div>
 
-        <div class="d-flex gap-2 justify-content-center flex-shrink-0">
+        <div class="d-flex gap-2 justify-content-center" style="flex-shrink: 0;">
           <button class="btn btn-primary d-flex align-items-center gap-2" id="openMsgModalBtn">
             <span>✉️</span> Enviar Recado
           </button>
           <button class="btn btn-outline-secondary d-flex align-items-center gap-2 position-relative" id="openInboxModalBtn">
             <span>📨</span> Mensagens
-            <span class="badge-count" id="inboxBadge" style="display:none;">0</span>
+            <span class="badge-count" id="inboxBadge" style="display:none; position: absolute; top: -4px; right: -4px; background: #dc3545; color: white; font-size: 0.65rem; padding: 2px 5px; border-radius: 10px; font-weight: bold;">0</span>
           </button>
         </div>
 
       </div>
 
-      <div class="col-lg-3 side-column">
+      <div class="side-column" style="width: 25%;">
         <div class="card shadow-sm border-0">
           <div class="card-header bg-success text-white py-2">
-            <h5 class="mb-0 fs-6">️ Cardápio Semanal</h5>
+            <h5 class="mb-0 fs-6">🍽️ Cardápio Semanal</h5>
           </div>
           <div class="card-body" id="cardapio-list"></div>
         </div>
