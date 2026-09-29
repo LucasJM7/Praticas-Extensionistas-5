@@ -61,7 +61,6 @@
   opacity: 1;
 }
 
-/* Botões de navegação invisíveis mas clicáveis nas bordas */
 .carousel-control-prev, .carousel-control-next {
   width: 60px;
   opacity: 0;
@@ -87,12 +86,14 @@
   border-left: 4px solid var(--bs-primary);
   background: white;
   border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .cardapio-item {
   border-left: 4px solid var(--bs-success);
   background: white;
   border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .routine-grid {
@@ -158,44 +159,6 @@
 .message-item .msg-body {
   font-size: 0.9rem;
   color: #333;
-}
-
-.message-item .msg-reply {
-  margin-top: 0.5rem;
-  padding: 0.5rem;
-  background: #f8f9fa;
-  border-radius: 0.25rem;
-  font-size: 0.85rem;
-  border-left: 2px solid var(--bs-success);
-}
-
-.action-btn {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  position: relative;
-}
-
-.action-btn:hover {
-  transform: scale(1.1);
-}
-
-.action-btn .badge-count {
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  background: #dc3545;
-  color: white;
-  font-size: 0.65rem;
-  padding: 2px 5px;
-  border-radius: 10px;
-  font-weight: bold;
 }
 
 .modal-overlay {
