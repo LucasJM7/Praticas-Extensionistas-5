@@ -1,6 +1,6 @@
 const CrecheNowNotifications = (() => {
 
-  const AVAILABLE_ICONS = ['📚', '', '🎨', '', '🍎', '️', '🔬', '', '🎭', '', '📐', '', '👨‍‍👧‍👦', '🎮', '📖', '', '🎪', '🌟', '🐾', ''];
+  const AVAILABLE_ICONS = ['🎵', '', '📚', '🎨', '👨‍👩‍👧‍👦'];
 
   const openModal = (id) => document.getElementById(id)?.classList.add('active');
   const closeModal = (id) => document.getElementById(id)?.classList.remove('active');
@@ -14,6 +14,17 @@ const CrecheNowNotifications = (() => {
         if (e.target === modal) modal.classList.remove('active');
       });
     });
+  };
+
+  const getTodayStr = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0]; // YYYY-MM-DD
+  };
+
+  const getWeekday = (dateStr) => {
+    const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+    const date = new Date(dateStr + 'T12:00:00');
+    return days[date.getDay()];
   };
 
   const renderFeed = (filter = 'all') => {
@@ -79,23 +90,20 @@ const CrecheNowNotifications = (() => {
     const container = document.getElementById('cardapio-list');
     if (!container) return;
     const cardapio = CrecheNowStorage.getCardapio();
-    container.innerHTML = cardapio.map(c => `
+    // Filtrar apenas itens que têm meal preenchido
+    const filtered = cardapio.filter(c => c.meal && c.meal.trim() !== '');
+    
+    if (filtered.length === 0) {
+      container.innerHTML = '<p class="text-muted text-center mt-4">Cardápio ainda não foi preenchido.</p>';
+      return;
+    }
+    
+    container.innerHTML = filtered.map(c => `
       <div class="cardapio-item">
         <div class="fw-bold text-success me-2" style="min-width: 40px; font-size: 0.9rem;">${c.day}</div>
         <div class="small text-muted">${c.meal}</div>
       </div>
     `).join('');
-  };
-
-  const getWeekday = (dateStr) => {
-    const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-    const date = new Date(dateStr + 'T12:00:00'); // evitar problemas de fuso
-    return days[date.getDay()];
-  };
-
-  const getFullDate = (dateStr) => {
-    const date = new Date(dateStr + 'T12:00:00');
-    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
   };
 
   const renderAgendaEditor = () => {
@@ -104,11 +112,11 @@ const CrecheNowNotifications = (() => {
     const agenda = CrecheNowStorage.getAgenda();
     container.innerHTML = agenda.map((a, i) => `
       <div class="editor-item" data-index="${i}">
-        <input type="date" class="form-control form-control-sm agenda-date" style="width: 140px;" value="${a.date || ''}" data-index="${i}">
-        <span class="day-preview">${a.day || '---'}</span>
+        <input type="date" class="form-control form-control-sm agenda-date" style="width: 140px;" value="${a.date || getTodayStr()}" data-index="${i}">
+        <span class="day-preview">${a.day || getWeekday(a.date || getTodayStr())}</span>
         <input type="time" class="form-control form-control-sm" style="width: 110px;" value="${a.time || '08:00'}" data-field="time">
         <input type="text" class="form-control form-control-sm flex-grow-1" value="${a.title || ''}" placeholder="Atividade" data-field="title">
-        <span class="fs-4 icon-preview" data-index="${i}">${a.icon || '📌'}</span>
+        <span class="fs-4 icon-preview" data-index="${i}">${a.icon || '🎵'}</span>
         <button type="button" class="btn btn-outline-secondary btn-sm btn-select-icon" data-index="${i}">🎨</button>
         <button type="button" class="btn btn-danger btn-sm btn-remove" onclick="CrecheNowNotifications.removeAgendaItem(${i})">🗑️</button>
       </div>
@@ -131,6 +139,7 @@ const CrecheNowNotifications = (() => {
           CrecheNowStorage.setAgenda(agenda);
           renderAgendaEditor();
           renderAgenda();
+          syncCardapioWithAgenda();
         }
       });
     });
@@ -164,9 +173,9 @@ const CrecheNowNotifications = (() => {
     const cardapio = CrecheNowStorage.getCardapio();
     container.innerHTML = cardapio.map((c, i) => `
       <div class="editor-item" data-index="${i}">
-        <input type="date" class="form-control form-control-sm cardapio-date" style="width: 140px;" value="${c.date || ''}" data-index="${i}">
-        <span class="day-preview">${c.day || '---'}</span>
-        <input type="text" class="form-control form-control-sm flex-grow-1" value="${c.meal || ''}" placeholder="Refeição" data-field="meal">
+        <input type="date" class="form-control form-control-sm cardapio-date" style="width: 140px;" value="${c.date || getTodayStr()}" data-index="${i}">
+        <span class="day-preview">${c.day || getWeekday(c.date || getTodayStr())}</span>
+        <input type="text" class="form-control form-control-sm flex-grow-1" value="${c.meal || ''}" placeholder="Refeição (deixe vazio se não houver aula)" data-field="meal">
         <button type="button" class="btn btn-danger btn-sm btn-remove" onclick="CrecheNowNotifications.removeCardapioItem(${i})">️</button>
       </div>
     `).join('');
@@ -184,6 +193,33 @@ const CrecheNowNotifications = (() => {
         }
       });
     });
+  };
+
+  const syncCardapioWithAgenda = () => {
+    const agenda = CrecheNowStorage.getAgenda();
+    const cardapio = CrecheNowStorage.getCardapio();
+    
+    // Pegar datas únicas da agenda
+    const agendaDates = [...new Set(agenda.map(a => a.date).filter(d => d))];
+    const cardapioDates = cardapio.map(c => c.date);
+    
+    let changed = false;
+    agendaDates.forEach(date => {
+      if (!cardapioDates.includes(date)) {
+        cardapio.push({
+          date: date,
+          day: getWeekday(date),
+          meal: '' // vazio, será preenchido depois
+        });
+        changed = true;
+      }
+    });
+    
+    if (changed) {
+      CrecheNowStorage.setCardapio(cardapio);
+      renderCardapioEditor();
+      renderCardapio();
+    }
   };
 
   const removeAgendaItem = (index) => {
@@ -246,14 +282,14 @@ const CrecheNowNotifications = (() => {
         <div class="routine-item">Colegas: ${statusIcon(q.peers)}</div>
         <div class="routine-item" style="grid-column: 1 / -1;">Alimentação: ${statusIcon(q.food)}</div>
       </div>
-      ${todayRoutine.comment ? `<div class="click-hint"> Clique para ver detalhes</div>` : ''}
+      ${todayRoutine.comment ? `<div class="click-hint">👆 Clique para ver detalhes</div>` : ''}
     `;
 
     todayContainer.onclick = () => {
       const modalContent = document.getElementById('routineModalContent');
       modalContent.innerHTML = `
         <button class="modal-close" onclick="document.getElementById('routineModal').classList.remove('active')">&times;</button>
-        <h4 class="mb-3"> Rotina Completa de Hoje</h4>
+        <h4 class="mb-3">👶 Rotina Completa de Hoje</h4>
         <div class="routine-grid mb-3">
           <div class="routine-item">Comportamento: ${statusIcon(q.behaved)}</div>
           <div class="routine-item">Atenção: ${statusIcon(q.attention)}</div>
@@ -356,7 +392,7 @@ const CrecheNowNotifications = (() => {
             <option value="A" ${s.class === 'A' ? 'selected' : ''}>A</option>
             <option value="B" ${s.class === 'B' ? 'selected' : ''}>B</option>
           </select>
-          <button class="btn btn-sm btn-outline-danger py-0" style="font-size: 0.75rem;" onclick="CrecheNowNotifications.deleteStudent(${s.id})">🗑️</button>
+          <button class="btn btn-sm btn-outline-danger py-0" style="font-size: 0.75rem;" onclick="CrecheNowNotifications.deleteStudent(${s.id})">️</button>
         </td>
       </tr>
     `).join('');
@@ -420,7 +456,6 @@ const CrecheNowNotifications = (() => {
     const session = CrecheNowStorage.get('session');
     
     if (tab === 'received') {
-      // Professor recebe mensagens dos pais dos seus alunos
       const myStudents = CrecheNowStorage.getStudents().filter(s => s.class === session.class);
       const myStudentIds = myStudents.map(s => s.id);
       const items = CrecheNowStorage.getMessages().filter(m => myStudentIds.includes(parseInt(m.childId)));
@@ -577,8 +612,15 @@ const CrecheNowNotifications = (() => {
         if (session?.role === 'teacher') renderTeacherDashboard();
       }
       if (e.key === 'crechenow_students') renderStudentManagement();
-      if (e.key === 'crechenow_agenda') { renderAgenda(); renderAgendaEditor(); }
-      if (e.key === 'crechenow_cardapio') { renderCardapio(); renderCardapioEditor(); }
+      if (e.key === 'crechenow_agenda') { 
+        renderAgenda(); 
+        renderAgendaEditor(); 
+        syncCardapioWithAgenda();
+      }
+      if (e.key === 'crechenow_cardapio') { 
+        renderCardapio(); 
+        renderCardapioEditor(); 
+      }
     });
   };
 
@@ -587,6 +629,7 @@ const CrecheNowNotifications = (() => {
     renderFeed, renderAgenda, renderCardapio,
     renderAgendaEditor, renderCardapioEditor,
     removeAgendaItem, removeCardapioItem,
+    syncCardapioWithAgenda,
     renderRoutineForParent, renderTeacherDashboard,
     renderStudentManagement, changeStudentClass, deleteStudent,
     renderInbox, renderTeacherInbox, renderParentMessagesForStaff,
