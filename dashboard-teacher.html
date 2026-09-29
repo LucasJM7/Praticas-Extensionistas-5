@@ -13,7 +13,7 @@
 <body class="bg-light">
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-info shadow-sm">
-    <div class="container">
+    <div class="container-fluid px-4">
       <a class="navbar-brand fw-bold" href="#">CRECHENOW</a>
       <div class="d-flex align-items-center">
         <span class="text-white me-3 d-none d-sm-inline" id="teacherInfo">Professor</span>
@@ -22,68 +22,86 @@
     </div>
   </nav>
 
-  <main class="container py-4">
-    <div class="row g-4">
-      <!-- Formulário de Rotina Diária -->
-      <div class="col-lg-7">
+  <main class="dashboard-main">
+    <div class="dashboard-row row">
+      
+      <div class="col-lg-5 side-column">
         <div class="card shadow-sm border-0">
-          <div class="card-header bg-info text-white">
-            <h5 class="mb-0">📝 Registro de Rotina Diária</h5>
+          <div class="card-header bg-info text-white py-2">
+            <h5 class="mb-0 fs-6">📝 Registro de Rotina Diária <small class="fw-normal">(Turma <span id="teacherClassDisplay"></span>)</small></h5>
           </div>
           <div class="card-body">
-            <form id="teacherRoutineForm" class="needs-validation" novalidate>
+            <form id="teacherRoutineForm" class="needs-validation h-100 d-flex flex-column" novalidate>
               <div class="mb-3">
-                <label class="form-label fw-bold">Selecione o Aluno (Turma <span id="teacherClassDisplay"></span>)</label>
+                <label class="form-label small fw-bold">Aluno</label>
                 <select class="form-select" id="routineStudentSelect" required>
                   <option value="">Escolha um aluno...</option>
                 </select>
               </div>
 
               <div class="mb-3">
-                <label class="form-label fw-bold d-block">Presença</label>
+                <label class="form-label small fw-bold d-block mb-1">Presença</label>
                 <div class="form-check form-switch">
                   <input class="form-check-input" type="checkbox" id="routineAttendance" checked>
-                  <label class="form-check-label" for="routineAttendance">Presente hoje</label>
+                  <label class="form-check-label small" for="routineAttendance">Presente hoje</label>
                 </div>
               </div>
 
-              <div class="mb-3">
-                <label class="form-label fw-bold">Avaliação do Dia</label>
+              <div class="mb-3 flex-grow-1">
+                <label class="form-label small fw-bold">Avaliação do Dia</label>
                 <div class="table-responsive">
-                  <table class="table table-sm align-middle">
+                  <table class="table table-sm align-middle mb-0">
                     <tbody>
-                      <tr><td>Se comportou bem?</td><td><input type="radio" name="q1" value="sim" required> Sim <input type="radio" name="q1" value="nao"> Não</td></tr>
-                      <tr><td>Prestou atenção na aula?</td><td><input type="radio" name="q2" value="sim" required> Sim <input type="radio" name="q2" value="nao"> Não</td></tr>
-                      <tr><td>Fez os deveres sem problemas?</td><td><input type="radio" name="q3" value="sim" required> Sim <input type="radio" name="q3" value="nao"> Não</td></tr>
-                      <tr><td>Se deu bem com os colegas?</td><td><input type="radio" name="q4" value="sim" required> Sim <input type="radio" name="q4" value="nao"> Não</td></tr>
-                      <tr><td>Comeu toda a comida?</td><td><input type="radio" name="q5" value="sim" required> Sim <input type="radio" name="q5" value="nao"> Não</td></tr>
+                      <tr><td class="small">Se comportou bem?</td><td><input type="radio" name="q1" value="sim" required> Sim <input type="radio" name="q1" value="nao"> Não</td></tr>
+                      <tr><td class="small">Prestou atenção?</td><td><input type="radio" name="q2" value="sim" required> Sim <input type="radio" name="q2" value="nao"> Não</td></tr>
+                      <tr><td class="small">Fez os deveres?</td><td><input type="radio" name="q3" value="sim" required> Sim <input type="radio" name="q3" value="nao"> Não</td></tr>
+                      <tr><td class="small">Se deu bem com colegas?</td><td><input type="radio" name="q4" value="sim" required> Sim <input type="radio" name="q4" value="nao"> Não</td></tr>
+                      <tr><td class="small">Comeu toda a comida?</td><td><input type="radio" name="q5" value="sim" required> Sim <input type="radio" name="q5" value="nao"> Não</td></tr>
                     </tbody>
                   </table>
                 </div>
               </div>
 
               <div class="mb-3">
-                <label for="routineComment" class="form-label fw-bold">Comentários Adicionais (Opcional)</label>
-                <textarea class="form-control" id="routineComment" rows="3" placeholder="Detalhes sobre o dia da criança..."></textarea>
+                <label class="form-label small fw-bold">Comentários (Opcional)</label>
+                <textarea class="form-control" id="routineComment" rows="2" placeholder="Detalhes sobre o dia..."></textarea>
               </div>
 
-              <button type="submit" class="btn btn-info text-white w-100">💾 Salvar Rotina do Dia</button>
+              <button type="submit" class="btn btn-info text-white w-100">💾 Salvar Rotina</button>
             </form>
           </div>
         </div>
       </div>
 
-      <!-- Histórico Recente da Turma -->
-      <div class="col-lg-5">
-        <div class="card shadow-sm border-0 h-100">
-          <div class="card-header bg-white">
-            <h5 class="mb-0">📋 Últimos Registros</h5>
+      <div class="col-lg-3 side-column">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white py-2">
+            <h5 class="mb-0 fs-6">👥 Minha Turma</h5>
           </div>
-          <div class="card-body p-0 overflow-auto" style="max-height: 500px;">
-            <div id="teacher-routine-history"></div>
+          <div class="card-body p-0">
+            <div class="table-responsive h-100">
+              <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light sticky-top">
+                  <tr><th>Nome</th><th>Hoje</th></tr>
+                </thead>
+                <tbody id="teacher-students-list"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
+
+      <div class="col-lg-4 side-column">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white py-2">
+            <h5 class="mb-0 fs-6">📋 Últimos Registros</h5>
+          </div>
+          <div class="card-body p-0">
+            <div id="teacher-routine-history" class="h-100" style="overflow-y: auto;"></div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </main>
 
