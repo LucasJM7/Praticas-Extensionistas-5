@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   if (typeof CrecheNowNotifications !== 'undefined') {
     CrecheNowNotifications.initRealTimeSync();
+    CrecheNowNotifications.initModalHandlers();
   }
 
   const session = CrecheNowStorage.get('session');
@@ -52,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
       staffForm.reset(); 
       staffForm.classList.remove('was-validated');
       CrecheNowNotifications.showToast('Comunicado enviado!');
+      CrecheNowNotifications.renderSent();
     });
   }
 
@@ -67,11 +69,15 @@ document.addEventListener('DOMContentLoaded', () => {
       addStudentForm.reset();
       CrecheNowNotifications.showToast('Aluno cadastrado com sucesso!');
       CrecheNowNotifications.renderStudentManagement();
+      CrecheNowNotifications.closeModal('addStudentModal');
     });
     CrecheNowNotifications.renderStudentManagement();
   }
 
-  // --- PROFESSOR: Rotina Diária ---
+  document.getElementById('openAddStudentBtn')?.addEventListener('click', () => {
+    CrecheNowNotifications.openModal('addStudentModal');
+  });
+
   const teacherRoutineForm = document.getElementById('teacherRoutineForm');
   if (teacherRoutineForm) {
     document.getElementById('teacherClassDisplay').textContent = session?.class || '';
@@ -103,40 +109,79 @@ document.addEventListener('DOMContentLoaded', () => {
 
       CrecheNowStorage.addRoutine(newRoutine);
       teacherRoutineForm.reset();
+      document.getElementById('routineAttendance').checked = true;
       CrecheNowNotifications.showToast('Rotina registrada com sucesso!');
       CrecheNowNotifications.renderTeacherDashboard();
     });
   }
 
   if (session?.role === 'parent') {
-    // Simulação: pega o primeiro aluno vinculado ao e-mail do pai (em app real viria do backend)
     const student = CrecheNowStorage.getStudents().find(s => s.parentEmail === session.email) || CrecheNowStorage.getStudents()[0];
     if (student) {
-      document.getElementById('childName').value = student.name; // Auto-preenche para facilitar teste
+      document.getElementById('childName').value = student.name;
       CrecheNowNotifications.renderRoutineForParent(student.id);
     }
+
+    document.getElementById('openMsgModalBtn')?.addEventListener('click', () => {
+      CrecheNowNotifications.openModal('msgModal');
+    });
+
+    document.getElementById('openInboxModalBtn')?.addEventListener('click', () => {
+      CrecheNowNotifications.renderInbox('received');
+      CrecheNowNotifications.openModal('inboxModal');
+    });
+
+    document.querySelectorAll('[data-inbox-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-inbox-tab]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        CrecheNowNotifications.renderInbox(btn.dataset.inboxTab);
+      });
+    });
 
     document.getElementById('toggleRoutineHistory')?.addEventListener('click', () => {
       const hist = document.getElementById('routine-history');
       hist.classList.toggle('d-none');
     });
+
+    const parentMsgForm = document.getElementById('parentMsgForm');
+    if (parentMsgForm) {
+      parentMsgForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!parentMsgForm.checkValidity()) { parentMsgForm.classList.add('was-validated'); return; }
+        
+        CrecheNowStorage.addMessage({
+          parentName: session.name,
+          parentEmail: session.email,
+          message: document.getElementById('parentMessage').value,
+          childName: document.getElementById('childName').value
+        });
+        parentMsgForm.reset();
+        parentMsgForm.classList.remove('was-validated');
+        CrecheNowNotifications.showToast('Recado enviado para a creche!');
+        CrecheNowNotifications.closeModal('msgModal');
+      });
+    }
+
+    CrecheNowNotifications.updateInboxBadge();
   }
 
-  const parentMsgForm = document.getElementById('parentMsgForm');
-  if (parentMsgForm) {
-    parentMsgForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      if (!parentMsgForm.checkValidity()) { parentMsgForm.classList.add('was-validated'); return; }
-      
-      CrecheNowStorage.addMessage({
-        parentName: session ? session.name : 'Responsável',
-        message: document.getElementById('parentMessage').value,
-        childName: document.getElementById('childName').value
+  if (session?.role === 'secretary') {
+    // Adiciona botão para ver recados dos pais no header
+    const header = document.querySelector('.card-header.bg-primary');
+    if (header && !document.getElementById('openParentMsgsBtn')) {
+      const btn = document.createElement('button');
+      btn.id = 'openParentMsgsBtn';
+      btn.className = 'btn btn-sm btn-light';
+      btn.textContent = '📬 Recados';
+      btn.addEventListener('click', () => {
+        CrecheNowNotifications.renderParentMessagesForStaff();
+        CrecheNowNotifications.openModal('parentMsgsModal');
       });
-      parentMsgForm.reset();
-      parentMsgForm.classList.remove('was-validated');
-      CrecheNowNotifications.showToast('Recado enviado para a creche!');
-    });
+      header.appendChild(btn);
+    }
+    CrecheNowNotifications.renderSent();
+    CrecheNowNotifications.updateInboxBadge();
   }
 
   document.getElementById('logoutBtn')?.addEventListener('click', CrecheNowAuth.logout);
@@ -169,6 +214,9 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.clear();
         window.location.reload();
       }
+    }
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
     }
   });
 });
