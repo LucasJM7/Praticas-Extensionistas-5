@@ -12,7 +12,7 @@
 </head>
 <body class="bg-light">
 
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container-fluid px-4">
       <a class="navbar-brand fw-bold" href="#">CRECHENOW</a>
       <div class="d-flex align-items-center">
@@ -27,7 +27,7 @@
       
       <div class="side-column">
         <div class="card shadow-sm border-0">
-          <div class="card-header bg-dark text-white py-2">
+          <div class="card-header bg-primary text-white py-2">
             <h5 class="mb-0 fs-6">📢 Novo Comunicado</h5>
           </div>
           <div class="card-body">
@@ -56,7 +56,7 @@
                 <label class="form-label small fw-bold">Mensagem</label>
                 <textarea class="form-control h-100" id="notifyBody" required></textarea>
               </div>
-              <button type="submit" class="btn btn-dark w-100">Enviar Comunicado</button>
+              <button type="submit" class="btn btn-primary w-100">Enviar Comunicado</button>
             </form>
           </div>
         </div>
@@ -84,7 +84,7 @@
         </div>
 
         <div class="d-flex gap-2">
-          <button class="btn btn-primary flex-fill" id="openAgendaEditorBtn">📅 Editar Agenda</button>
+          <button class="btn btn-primary flex-fill" id="openAgendaEditorBtn"> Editar Agenda</button>
           <button class="btn btn-success flex-fill" id="openCardapioEditorBtn">🍽️ Editar Cardápio</button>
         </div>
       </div>
@@ -92,7 +92,7 @@
       <div class="side-column">
         <div class="card shadow-sm border-0">
           <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fs-6">👥 Alunos</h5>
+            <h5 class="mb-0 fs-6"> Alunos</h5>
             <button class="btn btn-sm btn-light" id="openAddStudentBtn">+ Adicionar</button>
           </div>
           <div class="card-body p-0">
@@ -118,7 +118,7 @@
   <div class="modal-overlay" id="addStudentModal">
     <div class="modal-box">
       <button class="modal-close" data-close="addStudentModal">&times;</button>
-      <h4 class="mb-3"> Cadastrar Novo Aluno</h4>
+      <h4 class="mb-3">➕ Cadastrar Novo Aluno</h4>
       <form id="addStudentForm">
         <div class="mb-3">
           <label class="form-label fw-bold">Nome Completo</label>
@@ -143,7 +143,7 @@
   <div class="modal-overlay" id="parentMsgsModal">
     <div class="modal-box">
       <button class="modal-close" data-close="parentMsgsModal">&times;</button>
-      <h4 class="mb-3">📬 Recados dos Responsáveis</h4>
+      <h4 class="mb-3"> Recados dos Responsáveis</h4>
       <div id="parent-messages-list" style="max-height: 500px; overflow-y: auto;"></div>
     </div>
   </div>
@@ -151,7 +151,7 @@
   <div class="modal-overlay" id="agendaEditorModal">
     <div class="modal-box">
       <button class="modal-close" data-close="agendaEditorModal">&times;</button>
-      <h4 class="mb-3"> Editar Agenda Semanal</h4>
+      <h4 class="mb-3">📅 Editar Agenda Semanal</h4>
       <form id="agendaEditorForm">
         <div id="agendaEditorContainer"></div>
         <button type="button" class="btn btn-outline-primary btn-sm mb-3" id="addAgendaItemBtn">+ Adicionar Item</button>
@@ -163,7 +163,7 @@
   <div class="modal-overlay" id="cardapioEditorModal">
     <div class="modal-box">
       <button class="modal-close" data-close="cardapioEditorModal">&times;</button>
-      <h4 class="mb-3">🍽️ Editar Cardápio Semanal</h4>
+      <h4 class="mb-3">️ Editar Cardápio Semanal</h4>
       <form id="cardapioEditorForm">
         <div id="cardapioEditorContainer"></div>
         <button type="button" class="btn btn-outline-success btn-sm mb-3" id="addCardapioItemBtn">+ Adicionar Item</button>
