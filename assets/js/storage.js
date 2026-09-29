@@ -1,5 +1,4 @@
 const CrecheNowStorage = (() => {
-  const STORAGE_KEY = 'crechenow_data';
   const QUEUE_KEY = 'crechenow_offline_queue';
 
   return {
@@ -11,6 +10,37 @@ const CrecheNowStorage = (() => {
     },
     clear: () => localStorage.clear(),
     
+    // --- NOVOS MÉTODOS PARA O "BANCO DE DADOS" ---
+    getNotifications: () => CrecheNowStorage.get('crechenow_notifications') || [],
+    addNotification: (notif) => {
+      const notifs = CrecheNowStorage.getNotifications();
+      notifs.unshift({ ...notif, id: Date.now(), read: false, date: new Date() });
+      CrecheNowStorage.set('crechenow_notifications', notifs);
+    },
+    markAsRead: (id) => {
+      const notifs = CrecheNowStorage.getNotifications();
+      const item = notifs.find(n => n.id === id);
+      if (item) {
+        item.read = true;
+        CrecheNowStorage.set('crechenow_notifications', notifs);
+      }
+    },
+    getMessages: () => CrecheNowStorage.get('crechenow_parent_messages') || [],
+    addMessage: (msg) => {
+      const msgs = CrecheNowStorage.getMessages();
+      msgs.unshift({ ...msg, id: Date.now(), read: false, date: new Date() });
+      CrecheNowStorage.set('crechenow_parent_messages', msgs);
+    },
+    markMessageAsRead: (id) => {
+      const msgs = CrecheNowStorage.getMessages();
+      const item = msgs.find(m => m.id === id);
+      if (item) {
+        item.read = true;
+        CrecheNowStorage.set('crechenow_parent_messages', msgs);
+      }
+    },
+    // ----------------------------------------------
+    
     queueAction: (action) => {
       const queue = CrecheNowStorage.get(QUEUE_KEY) || [];
       queue.push({ ...action, timestamp: Date.now() });
@@ -19,8 +49,6 @@ const CrecheNowStorage = (() => {
     processQueue: async () => {
       const queue = CrecheNowStorage.get(QUEUE_KEY) || [];
       if (!queue.length || !navigator.onLine) return;
-      
-      // Simulação de sync para API futura
       console.log('Sincronizando fila offline:', queue.length, 'ações');
       CrecheNowStorage.set(QUEUE_KEY, []);
     }
