@@ -41,15 +41,11 @@ body {
   flex-direction: column;
   gap: 1rem;
   padding: 0;
-  min-width: 0; /* evita overflow */
+  min-width: 0;
 }
 
 .side-column { flex: 1; }
 .center-column { flex: 2; }
-
-.side-column.col-teacher-left { flex: 1; }
-.center-column.col-teacher-center { flex: 2; }
-.side-column.col-teacher-right { flex: 1; }
 
 .side-column > .card,
 .center-column > .card {
@@ -128,10 +124,9 @@ body {
 .badge { font-weight: 500; }
 .card { border-radius: 0.75rem; }
 
-/* Seletor de ícones */
 .icon-picker {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 0.5rem;
   margin-top: 0.5rem;
 }
