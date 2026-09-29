@@ -139,15 +139,6 @@
   color: #333;
 }
 
-.message-item .msg-reply {
-  margin-top: 0.5rem;
-  padding: 0.5rem;
-  background: #f8f9fa;
-  border-radius: 0.25rem;
-  font-size: 0.85rem;
-  border-left: 2px solid var(--bs-success);
-}
-
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -232,5 +223,5 @@
   .carousel-edge { width: 40px; }
   .carousel-control-prev, .carousel-control-next { width: 40px; }
   .routine-grid { grid-template-columns: 1fr; }
-  .icon-picker { grid-template-columns: repeat(4, 1fr); }
+  .icon-picker { grid-template-columns: repeat(3, 1fr); }
 }
