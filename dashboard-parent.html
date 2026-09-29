@@ -13,7 +13,7 @@
 <body class="bg-light">
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container">
+    <div class="container-fluid px-4">
       <a class="navbar-brand fw-bold" href="#">CRECHENOW</a>
       <div class="d-flex align-items-center">
         <span class="text-white me-3 d-none d-sm-inline" id="userNameDisplay">Responsável</span>
@@ -22,26 +22,22 @@
     </div>
   </nav>
 
-  <main class="container py-4">
-    <div class="row g-4">
+  <main class="dashboard-main">
+    <div class="dashboard-row row">
       
-      <!-- COLUNA 1: AGENDA (Esquerda) -->
-      <div class="col-lg-3">
-        <div class="card shadow-sm border-0 h-100 d-flex flex-column">
-          <div class="card-header bg-primary text-white">
+      <div class="col-lg-3 side-column">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-primary text-white py-2">
             <h5 class="mb-0 fs-6">📅 Agenda Semanal</h5>
           </div>
-          <div class="card-body p-2 flex-grow-1 overflow-auto" style="max-height: 600px;">
-            <div id="agenda-list"></div>
-          </div>
+          <div class="card-body" id="agenda-list"></div>
         </div>
       </div>
 
-      <!-- COLUNA 2: COMUNICADOS E ROTINA (Centro) -->
-      <div class="col-lg-6">
-        <!-- Comunicados em Carrossel -->
-        <div class="card shadow-sm border-0 mb-4">
-          <div class="card-header bg-white d-flex justify-content-between align-items-center">
+      <div class="col-lg-6 center-column">
+        
+        <div class="card shadow-sm border-0 flex-shrink-0">
+          <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fs-6">📢 Comunicados</h5>
             <div class="btn-group btn-group-sm">
               <button type="button" class="btn btn-outline-primary active" data-filter="all">Todos</button>
@@ -49,68 +45,89 @@
               <button type="button" class="btn btn-outline-primary" data-filter="pedagogico">Pedagógico</button>
             </div>
           </div>
-          <div class="card-body p-0">
-            <div id="notifications-carousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
-              <div class="carousel-inner" id="carousel-inner-notifs">
-                <!-- Inserido via JS -->
-              </div>
-              <button class="carousel-control-prev" type="button" data-bs-target="#notifications-carousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
-              </button>
-              <button class="carousel-control-next" type="button" data-bs-target="#notifications-carousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
-              </button>
-            </div>
+          <div class="notifications-carousel-wrapper" id="notifications-carousel" data-bs-ride="carousel" data-bs-interval="5000">
+            <div class="carousel-inner" id="carousel-inner-notifs"></div>
+            
+            <div class="carousel-edge carousel-edge-left"></div>
+            <div class="carousel-edge carousel-edge-right"></div>
+            
+            <button class="carousel-control-prev" type="button" data-bs-target="#notifications-carousel" data-bs-slide="prev">
+              <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#notifications-carousel" data-bs-slide="next">
+              <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            </button>
           </div>
         </div>
 
-        <!-- Rotina Diária da Criança -->
-        <div class="card shadow-sm border-0">
-          <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+        <div class="card shadow-sm border-0 routine-card-fixed">
+          <div class="card-header bg-success text-white py-2 d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fs-6">👶 Rotina de Hoje</h5>
             <button class="btn btn-sm btn-light text-success fw-bold" id="toggleRoutineHistory">Ver Histórico</button>
           </div>
-          <div class="card-body">
-            <div id="routine-today"></div>
-            <div id="routine-history" class="d-none mt-3 border-top pt-3"></div>
+          <div class="card-body" id="routine-today">
+            <p class="text-muted text-center mt-4">Carregando...</p>
           </div>
+          <div id="routine-history" class="d-none border-top p-3" style="max-height: 200px; overflow-y: auto;"></div>
         </div>
 
-        <!-- Formulário de Recado -->
-        <div class="card shadow-sm border-0 mt-4">
-          <div class="card-header bg-primary text-white">
-            <h5 class="mb-0 fs-6">✉️ Enviar Recado para a Creche</h5>
-          </div>
-          <div class="card-body">
-            <form id="parentMsgForm" class="needs-validation" novalidate>
-              <div class="mb-3">
-                <label for="childName" class="form-label small fw-bold">Nome da Criança</label>
-                <input type="text" class="form-control" id="childName" required placeholder="Ex: Joãozinho Silva">
-              </div>
-              <div class="mb-3">
-                <label for="parentMessage" class="form-label small fw-bold">Mensagem</label>
-                <textarea class="form-control" id="parentMessage" rows="2" required placeholder="Ex: Hoje o João vai chegar 30 min mais tarde."></textarea>
-              </div>
-              <button type="submit" class="btn btn-primary w-100 btn-sm">Enviar Recado</button>
-            </form>
-          </div>
+        <div class="d-flex gap-2 justify-content-center flex-shrink-0">
+          <button class="btn btn-primary d-flex align-items-center gap-2" id="openMsgModalBtn">
+            <span>✉️</span> Enviar Recado
+          </button>
+          <button class="btn btn-outline-secondary d-flex align-items-center gap-2 position-relative" id="openInboxModalBtn">
+            <span>📨</span> Mensagens
+            <span class="badge-count" id="inboxBadge" style="display:none;">0</span>
+          </button>
         </div>
+
       </div>
 
-      <!-- COLUNA 3: CARDÁPIO (Direita) -->
-      <div class="col-lg-3">
-        <div class="card shadow-sm border-0 h-100 d-flex flex-column">
-          <div class="card-header bg-success text-white">
-            <h5 class="mb-0 fs-6">🍽️ Cardápio Semanal</h5>
+      <div class="col-lg-3 side-column">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-success text-white py-2">
+            <h5 class="mb-0 fs-6">️ Cardápio Semanal</h5>
           </div>
-          <div class="card-body p-2 flex-grow-1 overflow-auto" style="max-height: 600px;">
-            <div id="cardapio-list"></div>
-          </div>
+          <div class="card-body" id="cardapio-list"></div>
         </div>
       </div>
 
     </div>
   </main>
+
+  <div class="modal-overlay" id="msgModal">
+    <div class="modal-box">
+      <button class="modal-close" data-close="msgModal">&times;</button>
+      <h4 class="mb-3">✉️ Enviar Recado para a Creche</h4>
+      <form id="parentMsgForm" class="needs-validation" novalidate>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Nome da Criança</label>
+          <input type="text" class="form-control" id="childName" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Mensagem</label>
+          <textarea class="form-control" id="parentMessage" rows="5" required placeholder="Escreva seu recado aqui..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Enviar Recado</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="inboxModal">
+    <div class="modal-box">
+      <button class="modal-close" data-close="inboxModal">&times;</button>
+      <h4 class="mb-3">📨 Minhas Mensagens</h4>
+      <ul class="nav nav-tabs mb-3" id="inboxTabs">
+        <li class="nav-item"><button class="nav-link active" data-inbox-tab="received">Recebidas</button></li>
+        <li class="nav-item"><button class="nav-link" data-inbox-tab="sent">Enviadas</button></li>
+      </ul>
+      <div id="inbox-content" style="max-height: 400px; overflow-y: auto;"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="routineModal">
+    <div class="modal-box" id="routineModalContent"></div>
+  </div>
 
   <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 
