@@ -11,6 +11,27 @@
 .agenda-item:last-child { border-bottom: none; }
 .agenda-time { color: #6c757d; font-size: 0.85rem; }
 
+.agenda-card {
+  border-left: 4px solid var(--bs-primary);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.agenda-card:hover {
+  transform: translateX(4px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05) !important;
+}
+.agenda-time-badge {
+  background-color: #e9ecef;
+  color: #495057;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.table-warning {
+  background-color: rgba(255, 193, 7, 0.15) !important;
+}
+
 @media (max-width: 768px) {
   .btn-group-sm .btn { padding: 0.25rem 0.5rem; font-size: 0.75rem; }
   .notify-card .card-body { padding: 0.75rem; }
