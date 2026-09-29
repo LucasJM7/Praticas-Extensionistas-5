@@ -13,7 +13,7 @@
 <body class="bg-light">
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-    <div class="container">
+    <div class="container-fluid px-4">
       <a class="navbar-brand fw-bold" href="#">CRECHENOW</a>
       <div class="d-flex align-items-center">
         <span class="text-white me-3 d-none d-sm-inline">Secretaria</span>
@@ -22,111 +22,126 @@
     </div>
   </nav>
 
-  <main class="container py-4">
-    <ul class="nav nav-tabs mb-4" id="staffTabs">
-      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-comunicados">Comunicados</button></li>
-      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-alunos">Gerenciar Alunos</button></li>
-    </ul>
-
-    <div class="tab-content">
-      <!-- ABA COMUNICADOS -->
-      <div class="tab-pane fade show active" id="tab-comunicados">
-        <div class="card shadow-sm border-0 mb-4">
-          <div class="card-header bg-dark text-white">
-            <h5 class="mb-0">📢 Novo Comunicado</h5>
+  <main class="dashboard-main">
+    <div class="dashboard-row row">
+      
+      <div class="col-lg-4 side-column">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-dark text-white py-2">
+            <h5 class="mb-0 fs-6">📢 Novo Comunicado</h5>
           </div>
           <div class="card-body">
-            <form id="staffForm" class="needs-validation" novalidate>
-              <div class="row g-3">
-                <div class="col-md-4">
-                  <label class="form-label">Tipo</label>
-                  <select class="form-select" id="notifyType" required>
-                    <option value="geral">Geral</option>
-                    <option value="saude">Saúde</option>
-                    <option value="pedagogico">Pedagógico</option>
-                  </select>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">Público</label>
-                  <select class="form-select" id="notifyTarget" required>
-                    <option value="all">Todas as turmas</option>
-                    <option value="A">Turma A</option>
-                    <option value="B">Turma B</option>
-                  </select>
-                </div>
-                <div class="col-md-12">
-                  <label class="form-label">Título</label>
-                  <input type="text" class="form-control" id="notifyTitle" required>
-                </div>
-                <div class="col-md-12">
-                  <label class="form-label">Mensagem</label>
-                  <textarea class="form-control" id="notifyBody" rows="3" required></textarea>
-                </div>
-                <div class="col-12 text-end">
-                  <button type="submit" class="btn btn-dark px-4">Enviar Comunicado</button>
-                </div>
+            <form id="staffForm" class="needs-validation h-100 d-flex flex-column" novalidate>
+              <div class="mb-3">
+                <label class="form-label small fw-bold">Tipo</label>
+                <select class="form-select" id="notifyType" required>
+                  <option value="geral">Geral</option>
+                  <option value="saude">Saúde</option>
+                  <option value="pedagogico">Pedagógico</option>
+                </select>
               </div>
+              <div class="mb-3">
+                <label class="form-label small fw-bold">Público</label>
+                <select class="form-select" id="notifyTarget" required>
+                  <option value="all">Todas as turmas</option>
+                  <option value="A">Turma A</option>
+                  <option value="B">Turma B</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label small fw-bold">Título</label>
+                <input type="text" class="form-control" id="notifyTitle" required>
+              </div>
+              <div class="mb-3 flex-grow-1">
+                <label class="form-label small fw-bold">Mensagem</label>
+                <textarea class="form-control h-100" id="notifyBody" required></textarea>
+              </div>
+              <button type="submit" class="btn btn-dark w-100">Enviar Comunicado</button>
             </form>
           </div>
         </div>
       </div>
 
-      <!-- ABA GERENCIAR ALUNOS -->
-      <div class="tab-pane fade" id="tab-alunos">
-        <div class="row g-4">
-          <div class="col-md-4">
-            <div class="card shadow-sm border-0">
-              <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">➕ Adicionar Aluno</h5>
-              </div>
-              <div class="card-body">
-                <form id="addStudentForm">
-                  <div class="mb-3">
-                    <label class="form-label">Nome Completo</label>
-                    <input type="text" class="form-control" id="newStudentName" required>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">Turma</label>
-                    <select class="form-select" id="newStudentClass" required>
-                      <option value="A">Turma A</option>
-                      <option value="B">Turma B</option>
-                    </select>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label">E-mail do Responsável</label>
-                    <input type="email" class="form-control" id="newStudentParentEmail" required>
-                  </div>
-                  <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
-                </form>
-              </div>
-            </div>
+      <div class="col-lg-4 side-column">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white py-2">
+            <h5 class="mb-0 fs-6">📋 Histórico de Envios</h5>
           </div>
-          <div class="col-md-8">
-            <div class="card shadow-sm border-0">
-              <div class="card-header bg-white">
-                <h5 class="mb-0">👥 Alunos Matriculados</h5>
-              </div>
-              <div class="card-body p-0">
-                <div class="table-responsive">
-                  <table class="table table-hover mb-0 align-middle">
-                    <thead class="table-light">
-                      <tr>
-                        <th>Nome</th>
-                        <th>Turma</th>
-                        <th>Responsável</th>
-                        <th>Ações</th>
-                      </tr>
-                    </thead>
-                    <tbody id="students-list"></tbody>
-                  </table>
-                </div>
-              </div>
+          <div class="card-body p-0">
+            <div class="table-responsive h-100">
+              <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light sticky-top">
+                  <tr>
+                    <th>Assunto</th>
+                    <th>Tipo</th>
+                    <th>Data</th>
+                  </tr>
+                </thead>
+                <tbody id="sent-notifications"></tbody>
+              </table>
             </div>
           </div>
         </div>
       </div>
+
+      <div class="col-lg-4 side-column">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fs-6">👥 Alunos</h5>
+            <button class="btn btn-sm btn-light" id="openAddStudentBtn">+ Adicionar</button>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive h-100">
+              <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light sticky-top">
+                  <tr>
+                    <th>Nome</th>
+                    <th>Turma</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="students-list"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </main>
+
+  <div class="modal-overlay" id="addStudentModal">
+    <div class="modal-box">
+      <button class="modal-close" data-close="addStudentModal">&times;</button>
+      <h4 class="mb-3">➕ Cadastrar Novo Aluno</h4>
+      <form id="addStudentForm">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Nome Completo</label>
+          <input type="text" class="form-control" id="newStudentName" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">Turma</label>
+          <select class="form-select" id="newStudentClass" required>
+            <option value="A">Turma A</option>
+            <option value="B">Turma B</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold">E-mail do Responsável</label>
+          <input type="email" class="form-control" id="newStudentParentEmail" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="parentMsgsModal">
+    <div class="modal-box">
+      <button class="modal-close" data-close="parentMsgsModal">&times;</button>
+      <h4 class="mb-3">📬 Recados dos Responsáveis</h4>
+      <div id="parent-messages-list" style="max-height: 500px; overflow-y: auto;"></div>
+    </div>
+  </div>
 
   <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
