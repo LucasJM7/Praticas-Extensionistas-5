@@ -78,6 +78,66 @@ document.addEventListener('DOMContentLoaded', () => {
     CrecheNowNotifications.openModal('addStudentModal');
   });
 
+  const agendaEditorForm = document.getElementById('agendaEditorForm');
+  if (agendaEditorForm) {
+    CrecheNowNotifications.renderAgendaEditor();
+    
+    document.getElementById('openAgendaEditorBtn')?.addEventListener('click', () => {
+      CrecheNowNotifications.renderAgendaEditor();
+      CrecheNowNotifications.openModal('agendaEditorModal');
+    });
+
+    document.getElementById('addAgendaItemBtn')?.addEventListener('click', () => {
+      const agenda = CrecheNowStorage.getAgenda();
+      agenda.push({ day: 'Seg', time: '08:00', title: 'Nova atividade', icon: '📌' });
+      CrecheNowStorage.setAgenda(agenda);
+      CrecheNowNotifications.renderAgendaEditor();
+    });
+
+    agendaEditorForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const items = document.querySelectorAll('#agendaEditorContainer .editor-item');
+      const newAgenda = Array.from(items).map(item => ({
+        day: item.querySelector('[data-field="day"]').value,
+        time: item.querySelector('[data-field="time"]').value,
+        title: item.querySelector('[data-field="title"]').value,
+        icon: item.querySelector('[data-field="icon"]').value
+      }));
+      CrecheNowStorage.setAgenda(newAgenda);
+      CrecheNowNotifications.showToast('Agenda atualizada!');
+      CrecheNowNotifications.closeModal('agendaEditorModal');
+    });
+  }
+
+  const cardapioEditorForm = document.getElementById('cardapioEditorForm');
+  if (cardapioEditorForm) {
+    CrecheNowNotifications.renderCardapioEditor();
+    
+    document.getElementById('openCardapioEditorBtn')?.addEventListener('click', () => {
+      CrecheNowNotifications.renderCardapioEditor();
+      CrecheNowNotifications.openModal('cardapioEditorModal');
+    });
+
+    document.getElementById('addCardapioItemBtn')?.addEventListener('click', () => {
+      const cardapio = CrecheNowStorage.getCardapio();
+      cardapio.push({ day: 'Seg', meal: 'Nova refeição' });
+      CrecheNowStorage.setCardapio(cardapio);
+      CrecheNowNotifications.renderCardapioEditor();
+    });
+
+    cardapioEditorForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const items = document.querySelectorAll('#cardapioEditorContainer .editor-item');
+      const newCardapio = Array.from(items).map(item => ({
+        day: item.querySelector('[data-field="day"]').value,
+        meal: item.querySelector('[data-field="meal"]').value
+      }));
+      CrecheNowStorage.setCardapio(newCardapio);
+      CrecheNowNotifications.showToast('Cardápio atualizado!');
+      CrecheNowNotifications.closeModal('cardapioEditorModal');
+    });
+  }
+
   const teacherRoutineForm = document.getElementById('teacherRoutineForm');
   if (teacherRoutineForm) {
     document.getElementById('teacherClassDisplay').textContent = session?.class || '';
@@ -167,7 +227,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (session?.role === 'secretary') {
-    // Adiciona botão para ver recados dos pais no header
     const header = document.querySelector('.card-header.bg-primary');
     if (header && !document.getElementById('openParentMsgsBtn')) {
       const btn = document.createElement('button');
