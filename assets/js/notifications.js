@@ -1,6 +1,6 @@
 const CrecheNowNotifications = (() => {
 
-  const AVAILABLE_ICONS = ['🎵', '', '📚', '🎨', '👨‍👩‍👧‍👦'];
+  const AVAILABLE_ICONS = ['🎵', '🤸', '📚', '🎨', '👨‍👩‍👧‍👦'];
 
   const openModal = (id) => document.getElementById(id)?.classList.add('active');
   const closeModal = (id) => document.getElementById(id)?.classList.remove('active');
@@ -16,9 +16,21 @@ const CrecheNowNotifications = (() => {
     });
   };
 
+  const formatDateTime = (date) => {
+    if (!date) return '—';
+    const d = new Date(date);
+    return d.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
   const getTodayStr = () => {
     const today = new Date();
-    return today.toISOString().split('T')[0]; // YYYY-MM-DD
+    return today.toISOString().split('T')[0];
   };
 
   const getWeekday = (dateStr) => {
@@ -52,7 +64,7 @@ const CrecheNowNotifications = (() => {
           </div>
           <p class="text-muted mb-2" style="font-size: 0.95rem;">${n.body}</p>
           <div class="d-flex justify-content-between align-items-center mt-auto">
-            <small class="text-muted">${CrecheNowNotifications.timeAgo(n.date)}</small>
+            <small class="text-muted">${formatDateTime(n.date)}</small>
             ${!n.read ? `<button class="btn btn-sm btn-outline-primary mark-read" data-id="${n.id}">Marcar como lido</button>` : ''}
           </div>
         </div>
@@ -90,7 +102,6 @@ const CrecheNowNotifications = (() => {
     const container = document.getElementById('cardapio-list');
     if (!container) return;
     const cardapio = CrecheNowStorage.getCardapio();
-    // Filtrar apenas itens que têm meal preenchido
     const filtered = cardapio.filter(c => c.meal && c.meal.trim() !== '');
     
     if (filtered.length === 0) {
@@ -176,7 +187,7 @@ const CrecheNowNotifications = (() => {
         <input type="date" class="form-control form-control-sm cardapio-date" style="width: 140px;" value="${c.date || getTodayStr()}" data-index="${i}">
         <span class="day-preview">${c.day || getWeekday(c.date || getTodayStr())}</span>
         <input type="text" class="form-control form-control-sm flex-grow-1" value="${c.meal || ''}" placeholder="Refeição (deixe vazio se não houver aula)" data-field="meal">
-        <button type="button" class="btn btn-danger btn-sm btn-remove" onclick="CrecheNowNotifications.removeCardapioItem(${i})">️</button>
+        <button type="button" class="btn btn-danger btn-sm btn-remove" onclick="CrecheNowNotifications.removeCardapioItem(${i})">🗑️</button>
       </div>
     `).join('');
 
@@ -199,7 +210,6 @@ const CrecheNowNotifications = (() => {
     const agenda = CrecheNowStorage.getAgenda();
     const cardapio = CrecheNowStorage.getCardapio();
     
-    // Pegar datas únicas da agenda
     const agendaDates = [...new Set(agenda.map(a => a.date).filter(d => d))];
     const cardapioDates = cardapio.map(c => c.date);
     
@@ -209,7 +219,7 @@ const CrecheNowNotifications = (() => {
         cardapio.push({
           date: date,
           day: getWeekday(date),
-          meal: '' // vazio, será preenchido depois
+          meal: ''
         });
         changed = true;
       }
@@ -304,7 +314,7 @@ const CrecheNowNotifications = (() => {
           </div>
         ` : '<p class="text-muted fst-italic">Sem comentários adicionais.</p>'}
         <div class="text-end mt-3">
-          <small class="text-muted">Registrado em ${new Date(todayRoutine.date).toLocaleString('pt-BR')}</small>
+          <small class="text-muted">Registrado em ${formatDateTime(todayRoutine.date)}</small>
         </div>
       `;
       openModal('routineModal');
@@ -392,7 +402,7 @@ const CrecheNowNotifications = (() => {
             <option value="A" ${s.class === 'A' ? 'selected' : ''}>A</option>
             <option value="B" ${s.class === 'B' ? 'selected' : ''}>B</option>
           </select>
-          <button class="btn btn-sm btn-outline-danger py-0" style="font-size: 0.75rem;" onclick="CrecheNowNotifications.deleteStudent(${s.id})">️</button>
+          <button class="btn btn-sm btn-outline-danger py-0" style="font-size: 0.75rem;" onclick="CrecheNowNotifications.deleteStudent(${s.id})">🗑️</button>
         </td>
       </tr>
     `).join('');
@@ -429,24 +439,24 @@ const CrecheNowNotifications = (() => {
         <div class="message-item ${m.read ? '' : 'unread'}">
           <div class="msg-header">
             <strong>${m.title || m.parentName || 'Remetente'}</strong>
-            <small>${CrecheNowNotifications.timeAgo(m.date)}</small>
+            <small>${formatDateTime(m.date)}</small>
           </div>
           <div class="msg-body">${m.body || m.message}</div>
           ${m.childName ? `<small class="text-muted">Criança: ${m.childName}</small>` : ''}
         </div>
-      `).join('') : '<p class="text-center text-muted">Nenhuma mensagem recebida.</p>';
+      `).join('') : '<p class="text-center text-muted py-3">Nenhuma mensagem recebida.</p>';
     } else {
       const sent = CrecheNowStorage.getMessages().filter(m => m.parentEmail === session?.email);
       container.innerHTML = sent.length ? sent.map(m => `
         <div class="message-item sent">
           <div class="msg-header">
             <strong>Para: Creche</strong>
-            <small>${CrecheNowNotifications.timeAgo(m.date)}</small>
+            <small>${formatDateTime(m.date)}</small>
           </div>
           <div class="msg-body">${m.message}</div>
           <small class="text-muted">Criança: ${m.childName}</small>
         </div>
-      `).join('') : '<p class="text-center text-muted">Nenhuma mensagem enviada.</p>';
+      `).join('') : '<p class="text-center text-muted py-3">Nenhuma mensagem enviada.</p>';
     }
   };
 
@@ -454,11 +464,18 @@ const CrecheNowNotifications = (() => {
     const container = document.getElementById('teacher-inbox-content');
     if (!container) return;
     const session = CrecheNowStorage.get('session');
+    if (!session) return;
+    
+    const myStudents = CrecheNowStorage.getStudents().filter(s => s.class === session.class);
+    const myStudentIds = myStudents.map(s => s.id);
+    const allMessages = CrecheNowStorage.getMessages();
     
     if (tab === 'received') {
-      const myStudents = CrecheNowStorage.getStudents().filter(s => s.class === session.class);
-      const myStudentIds = myStudents.map(s => s.id);
-      const items = CrecheNowStorage.getMessages().filter(m => myStudentIds.includes(parseInt(m.childId)));
+      const items = allMessages.filter(m => 
+        myStudentIds.includes(parseInt(m.childId)) && 
+        m.teacherEmail !== session.email &&
+        !m.isTeacherMessage
+      );
       
       container.innerHTML = items.length ? items.map(m => {
         const student = myStudents.find(s => s.id === parseInt(m.childId));
@@ -466,14 +483,14 @@ const CrecheNowNotifications = (() => {
           <div class="message-item ${m.read ? '' : 'unread'}">
             <div class="msg-header">
               <strong>${m.parentName}</strong>
-              <small>${CrecheNowNotifications.timeAgo(m.date)}</small>
+              <small>${formatDateTime(m.date)}</small>
             </div>
             <div class="msg-body">${m.message}</div>
             <small class="text-muted">Criança: ${student ? student.name : m.childName}</small>
             ${!m.read ? `<button class="btn btn-sm btn-success mt-2 mark-teacher-msg-read" data-id="${m.id}">✓ Marcar como lido</button>` : '<span class="badge bg-success mt-2">Lido</span>'}
           </div>
         `;
-      }).join('') : '<p class="text-center text-muted">Nenhuma mensagem recebida.</p>';
+      }).join('') : '<p class="text-center text-muted py-3">Nenhuma mensagem recebida dos pais.</p>';
 
       container.querySelectorAll('.mark-teacher-msg-read').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -484,19 +501,22 @@ const CrecheNowNotifications = (() => {
         });
       });
     } else {
-      const sent = CrecheNowStorage.getMessages().filter(m => m.teacherEmail === session?.email);
+      // Apenas mensagens ENVIADAS pelo professor
+      const sent = allMessages.filter(m => 
+        m.teacherEmail === session.email && m.isTeacherMessage
+      );
       container.innerHTML = sent.length ? sent.map(m => {
         const student = CrecheNowStorage.getStudents().find(s => s.id === parseInt(m.childId));
         return `
           <div class="message-item sent">
             <div class="msg-header">
               <strong>Para: Responsável de ${student ? student.name : 'aluno'}</strong>
-              <small>${CrecheNowNotifications.timeAgo(m.date)}</small>
+              <small>${formatDateTime(m.date)}</small>
             </div>
             <div class="msg-body">${m.message}</div>
           </div>
         `;
-      }).join('') : '<p class="text-center text-muted">Nenhuma mensagem enviada.</p>';
+      }).join('') : '<p class="text-center text-muted py-3">Nenhuma mensagem enviada.</p>';
     }
   };
 
@@ -508,13 +528,13 @@ const CrecheNowNotifications = (() => {
       <div class="message-item ${m.read ? '' : 'unread'} mb-2">
         <div class="msg-header">
           <strong>${m.parentName}</strong>
-          <small>${new Date(m.date).toLocaleString('pt-BR')}</small>
+          <small>${formatDateTime(m.date)}</small>
         </div>
         <div class="msg-body">${m.message}</div>
         <small class="text-muted">Criança: ${m.childName}</small>
         ${!m.read ? `<button class="btn btn-sm btn-success mt-2 mark-msg-read" data-id="${m.id}">✓ Marcar como lido</button>` : '<span class="badge bg-success mt-2">Lido</span>'}
       </div>
-    `).join('') : '<p class="text-center text-muted">Nenhum recado dos pais.</p>';
+    `).join('') : '<p class="text-center text-muted py-3">Nenhum recado dos pais.</p>';
 
     container.querySelectorAll('.mark-msg-read').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -551,7 +571,7 @@ const CrecheNowNotifications = (() => {
     const myStudents = CrecheNowStorage.getStudents().filter(s => s.class === session.class);
     const myStudentIds = myStudents.map(s => s.id);
     const unread = CrecheNowStorage.getMessages().filter(m => 
-      myStudentIds.includes(parseInt(m.childId)) && !m.read
+      myStudentIds.includes(parseInt(m.childId)) && !m.read && !m.isTeacherMessage
     ).length;
     
     if (unread > 0) {
@@ -570,7 +590,7 @@ const CrecheNowNotifications = (() => {
       <tr>
         <td class="small">${s.title}</td>
         <td><span class="badge bg-light text-dark border">${s.type}</span></td>
-        <td class="small text-muted">${new Date(s.date).toLocaleDateString('pt-BR')}</td>
+        <td class="small text-muted">${formatDateTime(s.date)}</td>
       </tr>
     `).join('') : '<tr><td colspan="3" class="text-center text-muted py-3 small">Nenhum envio registrado</td></tr>';
   };
@@ -635,6 +655,7 @@ const CrecheNowNotifications = (() => {
     renderInbox, renderTeacherInbox, renderParentMessagesForStaff,
     updateInboxBadge, updateTeacherInboxBadge,
     renderSent, showToast, timeAgo, initRealTimeSync,
-    openModal, closeModal
+    openModal, closeModal,
+    formatDateTime
   };
 })();
