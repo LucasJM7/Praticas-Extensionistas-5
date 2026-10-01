@@ -52,6 +52,16 @@
                 <label class="form-label small fw-bold">Título</label>
                 <input type="text" class="form-control" id="notifyTitle" required>
               </div>
+              <div class="row mb-3">
+                <div class="col-6">
+                  <label class="form-label small fw-bold">Data</label>
+                  <input type="date" class="form-control" id="notifyDate" required>
+                </div>
+                <div class="col-6">
+                  <label class="form-label small fw-bold">Hora</label>
+                  <input type="time" class="form-control" id="notifyTime" required>
+                </div>
+              </div>
               <div class="mb-3 flex-grow-1">
                 <label class="form-label small fw-bold">Mensagem</label>
                 <textarea class="form-control h-100" id="notifyBody" required></textarea>
@@ -74,7 +84,7 @@
                   <tr>
                     <th>Assunto</th>
                     <th>Tipo</th>
-                    <th>Data</th>
+                    <th>Data/Hora</th>
                   </tr>
                 </thead>
                 <tbody id="sent-notifications"></tbody>
@@ -84,7 +94,7 @@
         </div>
 
         <div class="d-flex gap-2">
-          <button class="btn btn-primary flex-fill" id="openAgendaEditorBtn"> Editar Agenda</button>
+          <button class="btn btn-primary flex-fill" id="openAgendaEditorBtn">📅 Editar Agenda</button>
           <button class="btn btn-success flex-fill" id="openCardapioEditorBtn">🍽️ Editar Cardápio</button>
         </div>
       </div>
@@ -92,7 +102,7 @@
       <div class="side-column">
         <div class="card shadow-sm border-0">
           <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fs-6"> Alunos</h5>
+            <h5 class="mb-0 fs-6">👥 Alunos</h5>
             <button class="btn btn-sm btn-light" id="openAddStudentBtn">+ Adicionar</button>
           </div>
           <div class="card-body p-0">
@@ -143,7 +153,7 @@
   <div class="modal-overlay" id="parentMsgsModal">
     <div class="modal-box">
       <button class="modal-close" data-close="parentMsgsModal">&times;</button>
-      <h4 class="mb-3"> Recados dos Responsáveis</h4>
+      <h4 class="mb-3">📬 Recados dos Responsáveis</h4>
       <div id="parent-messages-list" style="max-height: 500px; overflow-y: auto;"></div>
     </div>
   </div>
@@ -163,7 +173,7 @@
   <div class="modal-overlay" id="cardapioEditorModal">
     <div class="modal-box">
       <button class="modal-close" data-close="cardapioEditorModal">&times;</button>
-      <h4 class="mb-3">️ Editar Cardápio Semanal</h4>
+      <h4 class="mb-3">🍽️ Editar Cardápio Semanal</h4>
       <form id="cardapioEditorForm">
         <div id="cardapioEditorContainer"></div>
         <button type="button" class="btn btn-outline-success btn-sm mb-3" id="addCardapioItemBtn">+ Adicionar Item</button>
