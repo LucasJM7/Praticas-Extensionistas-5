@@ -40,18 +40,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const staffForm = document.getElementById('staffForm');
   if (staffForm) {
+    const notifyDateInput = document.getElementById('notifyDate');
+    const notifyTimeInput = document.getElementById('notifyTime');
+    if (notifyDateInput && notifyTimeInput) {
+      const now = new Date();
+      notifyDateInput.value = now.toISOString().split('T')[0];
+      notifyTimeInput.value = now.toTimeString().slice(0, 5);
+    }
+
     staffForm.addEventListener('submit', (e) => {
       e.preventDefault();
       if (!staffForm.checkValidity()) { staffForm.classList.add('was-validated'); return; }
+      
+      const dateVal = document.getElementById('notifyDate').value;
+      const timeVal = document.getElementById('notifyTime').value;
+      const customDateTime = new Date(`${dateVal}T${timeVal}:00`);
+      
       const newNotif = {
         title: document.getElementById('notifyTitle').value,
         body: document.getElementById('notifyBody').value,
         type: document.getElementById('notifyType').value,
         target: document.getElementById('notifyTarget').value,
+        date: customDateTime.toISOString()
       };
       CrecheNowStorage.addNotification(newNotif);
       staffForm.reset(); 
       staffForm.classList.remove('was-validated');
+      
+      const now = new Date();
+      notifyDateInput.value = now.toISOString().split('T')[0];
+      notifyTimeInput.value = now.toTimeString().slice(0, 5);
+      
       CrecheNowNotifications.showToast('Comunicado enviado!');
       CrecheNowNotifications.renderSent();
     });
@@ -78,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     CrecheNowNotifications.openModal('addStudentModal');
   });
 
+  // ===== SECRETARIA: Editores de Agenda e Cardápio =====
   const agendaEditorForm = document.getElementById('agendaEditorForm');
   if (agendaEditorForm) {
     CrecheNowNotifications.renderAgendaEditor();
@@ -244,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const myStudents = CrecheNowStorage.getStudents().filter(s => s.class === session.class);
     const myStudentIds = myStudents.map(s => s.id);
     const msgs = CrecheNowStorage.getMessages().filter(m => 
-      myStudentIds.includes(parseInt(m.childId)) && !m.read
+      myStudentIds.includes(parseInt(m.childId)) && !m.read && !m.isTeacherMessage
     );
     msgs.forEach(m => CrecheNowStorage.markMessageAsRead(m.id));
     CrecheNowNotifications.updateTeacherInboxBadge();
