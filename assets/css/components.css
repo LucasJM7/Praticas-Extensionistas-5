@@ -225,3 +225,26 @@
   .routine-grid { grid-template-columns: 1fr; }
   .icon-picker { grid-template-columns: repeat(3, 1fr); }
 }
+
+@media (max-width: 768px) {
+  .modal-overlay .modal-box {
+    max-height: 90vh;
+    padding: 1.5rem;
+    margin: 0.5rem;
+  }
+
+  #inbox-content,
+  #teacher-inbox-content {
+    max-height: 50vh !important;
+  }
+
+  .d-flex.gap-2.justify-content-center {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .d-flex.gap-2.justify-content-center .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
