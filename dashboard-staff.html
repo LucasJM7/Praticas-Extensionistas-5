@@ -25,7 +25,7 @@
   <main class="dashboard-main">
     <div class="dashboard-row">
 
-      <div class="side-column">
+      <div class="side-column" data-mobile-label="Comunicados">
         <div class="card shadow-sm border-0" style="flex: 1; min-height: 0;">
           <div class="card-header bg-white py-2">
             <h5 class="mb-0 fs-6">Histórico de Comunicados</h5>
@@ -43,21 +43,19 @@
         </div>
       </div>
 
-      <div class="center-column">
+      <div class="center-column" data-mobile-label="Ações">
         <div class="card shadow-sm border-0">
-          <div class="card-header bg-success text-white py-2 d-flex justify-content-between align-items-center">
+          <div class="card-header bg-success text-white py-2">
             <h5 class="mb-0 fs-6">Ações Rápidas</h5>
-            <button class="btn btn-sm btn-light" id="openParentMsgsBtn">Recados Recebidos</button>
           </div>
           <div class="card-body">
             <div class="d-grid gap-2 mb-3">
               <button class="btn btn-success w-100" id="openNoticeBtn">Novo Comunicado</button>
-              <button class="btn btn-outline-success w-100" id="openMessageBtn">Enviar Recado</button>
             </div>
             <hr>
             <h6 class="small fw-bold">Cardápio e Calendários</h6>
             <div class="d-grid gap-2 mb-3">
-              <button class="btn btn-outline-success w-100" id="openCardapioEditorBtn">Editar Cardápio</button>
+              <button class="btn btn-warning w-100" id="openCardapioEditorBtn">Editar Cardápio</button>
               <button class="btn btn-outline-success w-100" id="openSchoolCalendarBtn">Calendário de Aulas</button>
               <button class="btn btn-outline-secondary w-100" id="openCalendarBtn">Ver Calendário (Mês/Ano)</button>
             </div>
@@ -69,11 +67,19 @@
             </div>
           </div>
         </div>
+
+        <div class="d-flex gap-2 justify-content-center" style="flex-shrink: 0;">
+          <button class="btn btn-primary" id="staffMsgBtn">Enviar Recado</button>
+          <button class="btn btn-outline-primary position-relative" id="staffInboxBtn">
+            Mensagens
+            <span id="inboxBadge" class="inbox-badge">0</span>
+          </button>
+        </div>
       </div>
 
-      <div class="side-column">
+      <div class="side-column" data-mobile-label="Cadastros">
         <div class="card shadow-sm border-0" style="flex: 1; min-height: 0;">
-          <ul class="nav nav-tabs mt-2 px-3">
+          <ul class="nav nav-tabs mt-2 px-3 staff-tabs">
             <li class="nav-item"><button class="nav-link active" data-staff-tab="students">Alunos</button></li>
             <li class="nav-item"><button class="nav-link" data-staff-tab="parents">Responsáveis</button></li>
             <li class="nav-item"><button class="nav-link" data-staff-tab="teachers">Professores</button></li>
@@ -118,6 +124,26 @@
       <button class="modal-close" data-close="messageFormModal">×</button>
       <h4 class="mb-3">Enviar Recado</h4>
       <div id="messageFormBody"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="inboxModal">
+    <div class="modal-box">
+      <button class="modal-close" data-close="inboxModal">×</button>
+      <h4 class="mb-3">Minhas Mensagens</h4>
+      <ul class="nav nav-tabs mb-3">
+        <li class="nav-item"><button class="nav-link active" data-inbox-tab="received">Recebidas</button></li>
+        <li class="nav-item"><button class="nav-link" data-inbox-tab="sent">Enviadas</button></li>
+      </ul>
+      <div id="inbox-content" style="max-height: 400px; overflow-y: auto;"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="threadModal">
+    <div class="modal-box">
+      <button class="modal-close" data-close="threadModal">×</button>
+      <h4 class="mb-3">Conversa</h4>
+      <div id="threadModalBody"></div>
     </div>
   </div>
 
@@ -188,14 +214,6 @@
       <button class="modal-close" data-close="loginFormModal">×</button>
       <h4 class="mb-3">Criar Login</h4>
       <div id="loginFormBody"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="parentMsgsModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="parentMsgsModal">×</button>
-      <h4 class="mb-3">Recados Recebidos</h4>
-      <div id="parent-messages-list" style="max-height: 500px; overflow-y: auto;"></div>
     </div>
   </div>
 
