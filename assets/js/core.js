@@ -38,9 +38,9 @@ window.CrecheNowConfig = (() => {
   };
 
   return {
-    BASE_PATH: '/Praticas-Extensionistas-5/',
+    BASE_PATH: '/Praticas-Extensionistas-5/', // manter igual ao BASE do service-worker.js
     SESSION_TTL_HOURS: 12,
-    NOTICE_TYPES: ['Evento', 'Aviso', 'Bilhete'],
+    NOTICE_TYPES: ['Eventos', 'Avisos', 'Bilhetes'],
     RESPONSE_TYPES: ['Mensagem escrita', 'Sim/Não'],
     RELATIONSHIPS: ['Pai', 'Mãe', 'Tio', 'Tia', 'Avô', 'Avó', 'Outro responsável'],
     WEEKDAYS: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
