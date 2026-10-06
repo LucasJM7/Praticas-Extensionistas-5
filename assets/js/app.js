@@ -11,6 +11,34 @@ document.addEventListener('DOMContentLoaded', () => {
     nameDisplay.textContent = session.name + (session.class ? ` (Turma ${session.class})` : '') + (session.isJunior ? ' [Júnior]' : '');
   }
 
+  const setupMobileSwitcher = () => {
+    const main = document.querySelector('.dashboard-main');
+    if (!main) return;
+    const cols = main.querySelectorAll('.dashboard-row > *');
+    if (!cols.length) return;
+    const bar = document.createElement('div');
+    bar.className = 'mobile-switcher';
+    cols.forEach((col, i) => {
+      col.dataset.mobilePanel = String(i);
+      const btn = document.createElement('button');
+      btn.className = 'btn btn-sm btn-outline-primary mobile-switch-btn';
+      btn.textContent = col.dataset.mobileLabel || ('Seção ' + (i + 1));
+      btn.dataset.mobilePanel = String(i);
+      bar.appendChild(btn);
+    });
+    main.prepend(bar);
+    const activate = (i) => {
+      cols.forEach(c => c.classList.toggle('mobile-active', c.dataset.mobilePanel === i));
+      bar.querySelectorAll('.mobile-switch-btn').forEach(b => b.classList.toggle('active', b.dataset.mobilePanel === i));
+    };
+    bar.addEventListener('click', (e) => {
+      const b = e.target.closest('.mobile-switch-btn');
+      if (b) activate(b.dataset.mobilePanel);
+    });
+    activate(cols.length > 1 ? '1' : '0');
+  };
+  setupMobileSwitcher();
+
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
     loginForm.addEventListener('submit', (e) => {
@@ -50,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
       renderChildData(childSelect.value);
     } else {
       const any = CrecheNowStorage.getStudents()[0];
-      if (any) { renderChildData(any.id); }
+      if (any) renderChildData(any.id);
     }
 
     document.getElementById('toggleRoutineHistory')?.addEventListener('click', () => {
@@ -65,7 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('notifications-carousel')?.addEventListener('click', CrecheNowNotifications.handleResponseDelegation);
-    document.getElementById('inbox-content')?.addEventListener('click', CrecheNowNotifications.handleResponseDelegation);
+
+    const inboxContent = document.getElementById('inbox-content');
+    inboxContent?.addEventListener('click', CrecheNowNotifications.handleResponseDelegation);
+    inboxContent?.addEventListener('click', CrecheNowNotifications.handleInboxDelegation);
+    document.getElementById('threadModalBody')?.addEventListener('click', CrecheNowNotifications.handleThreadDelegation);
 
     document.getElementById('openMsgModalBtn')?.addEventListener('click', () => {
       CrecheNowNotifications.renderMessageForm();
@@ -75,8 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('openInboxModalBtn')?.addEventListener('click', () => {
       CrecheNowNotifications.renderInbox('received');
-      CrecheNowStorage.getNotifications().filter(n => !n.read).forEach(n => CrecheNowStorage.markAsRead(n.id));
-      CrecheNowNotifications.updateInboxBadge();
       CrecheNowNotifications.openModal('inboxModal');
     });
     document.querySelectorAll('[data-inbox-tab]').forEach(btn => {
@@ -102,17 +132,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('noticeFormBody')?.addEventListener('click', CrecheNowNotifications.handleSendNotice);
 
-    document.getElementById('openMessageBtn')?.addEventListener('click', () => {
+    // Recados na parte de baixo (como pais/professores)
+    document.getElementById('staffMsgBtn')?.addEventListener('click', () => {
       CrecheNowNotifications.renderMessageForm();
       CrecheNowNotifications.openModal('messageFormModal');
     });
     document.getElementById('messageFormBody')?.addEventListener('click', CrecheNowNotifications.handleSendMessage);
-
-    document.getElementById('openParentMsgsBtn')?.addEventListener('click', () => {
-      CrecheNowNotifications.renderParentMessagesForStaff();
-      CrecheNowNotifications.openModal('parentMsgsModal');
+    document.getElementById('staffInboxBtn')?.addEventListener('click', () => {
+      CrecheNowNotifications.renderInbox('received');
+      CrecheNowNotifications.openModal('inboxModal');
+    });
+    const inboxContent = document.getElementById('inbox-content');
+    inboxContent?.addEventListener('click', CrecheNowNotifications.handleInboxDelegation);
+    document.getElementById('threadModalBody')?.addEventListener('click', CrecheNowNotifications.handleThreadDelegation);
+    document.querySelectorAll('[data-inbox-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-inbox-tab]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        CrecheNowNotifications.renderInbox(btn.dataset.inboxTab);
+      });
     });
 
+    // Respostas dos responsáveis
     document.getElementById('sent-notifications')?.addEventListener('click', (e) => {
       const row = e.target.closest('tr[data-action="open-responses"]');
       if (row) CrecheNowNotifications.openResponsesModal(row.dataset.id);
@@ -192,7 +233,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('personEditBody')?.addEventListener('click', CrecheNowNotifications.handlePersonEditDelegation);
       document.getElementById('personEditBody')?.addEventListener('input', CrecheNowNotifications.handlePersonEditInput);
 
-      // Logins
       document.getElementById('openAddLoginBtn')?.addEventListener('click', () => {
         CrecheNowNotifications.renderLoginForm();
         CrecheNowNotifications.openModal('loginFormModal');
@@ -266,11 +306,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('messageFormBody')?.addEventListener('click', CrecheNowNotifications.handleSendMessage);
 
+    const inboxContent = document.getElementById('inbox-content');
+    inboxContent?.addEventListener('click', CrecheNowNotifications.handleInboxDelegation);
+    document.getElementById('threadModalBody')?.addEventListener('click', CrecheNowNotifications.handleThreadDelegation);
+
     document.getElementById('openTeacherInboxModalBtn')?.addEventListener('click', () => {
       CrecheNowNotifications.renderInbox('received');
-      CrecheNowStorage.getMessages().filter(m => m.toPersonId === session.personId && !m.read)
-        .forEach(m => CrecheNowStorage.markMessageAsRead(m.id));
-      CrecheNowNotifications.updateInboxBadge();
       CrecheNowNotifications.openModal('inboxModal');
     });
     document.querySelectorAll('[data-inbox-tab]').forEach(btn => {
