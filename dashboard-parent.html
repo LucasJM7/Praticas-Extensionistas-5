@@ -26,31 +26,29 @@
   <main class="dashboard-main">
     <div class="dashboard-row">
 
-      <div class="side-column">
+      <div class="side-column" data-mobile-label="Agenda">
         <div class="card shadow-sm border-0">
           <div class="card-header bg-success text-white py-2"><h5 class="mb-0 fs-6">Agenda Semanal</h5></div>
           <div class="card-body" id="agenda-list"></div>
         </div>
       </div>
 
-      <div class="center-column">
+      <div class="center-column" data-mobile-label="Início">
 
-        <div class="card shadow-sm border-0" style="flex: 1; min-height: 200px;">
+        <div class="card shadow-sm border-0 notice-card-fixed" style="flex-shrink: 0;">
           <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fs-6">Comunicados</h5>
             <div class="btn-group btn-group-sm">
               <button type="button" class="btn btn-outline-primary active" data-filter="all">Todos</button>
-              <button type="button" class="btn btn-outline-primary" data-filter="Evento">Evento</button>
-              <button type="button" class="btn btn-outline-primary" data-filter="Aviso">Aviso</button>
-              <button type="button" class="btn btn-outline-primary" data-filter="Bilhete">Bilhete</button>
+              <button type="button" class="btn btn-outline-primary" data-filter="Eventos">Eventos</button>
+              <button type="button" class="btn btn-outline-primary" data-filter="Avisos">Avisos</button>
+              <button type="button" class="btn btn-outline-primary" data-filter="Bilhetes">Bilhetes</button>
             </div>
           </div>
           <div class="notifications-carousel-wrapper" id="notifications-carousel">
             <div class="carousel-inner" id="carousel-inner-notifs"></div>
-            <div class="carousel-edge carousel-edge-left"></div>
-            <div class="carousel-edge carousel-edge-right"></div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#notifications-carousel" data-bs-slide="prev"><span class="carousel-control-prev-icon" aria-hidden="true"></span></button>
-            <button class="carousel-control-next" type="button" data-bs-target="#notifications-carousel" data-bs-slide="next"><span class="carousel-control-next-icon" aria-hidden="true"></span></button>
+            <button class="carousel-control-prev" type="button" data-bs-target="#notifications-carousel" data-bs-slide="prev"><span class="cn-arrow" aria-hidden="true">‹</span></button>
+            <button class="carousel-control-next" type="button" data-bs-target="#notifications-carousel" data-bs-slide="next"><span class="cn-arrow" aria-hidden="true">›</span></button>
           </div>
         </div>
 
@@ -68,7 +66,7 @@
 
         <div class="d-flex gap-2 justify-content-center" style="flex-shrink: 0;">
           <button class="btn btn-primary" id="openMsgModalBtn">Enviar Recado</button>
-          <button class="btn btn-outline-secondary position-relative" id="openInboxModalBtn">
+          <button class="btn btn-outline-primary position-relative" id="openInboxModalBtn">
             Mensagens
             <span id="inboxBadge" class="inbox-badge">0</span>
           </button>
@@ -76,7 +74,7 @@
 
       </div>
 
-      <div class="side-column">
+      <div class="side-column" data-mobile-label="Cardápio">
         <div class="card shadow-sm border-0">
           <div class="card-header bg-success text-white py-2"><h5 class="mb-0 fs-6">Cardápio Semanal</h5></div>
           <div class="card-body" id="cardapio-list"></div>
@@ -103,6 +101,14 @@
         <li class="nav-item"><button class="nav-link" data-inbox-tab="sent">Enviadas</button></li>
       </ul>
       <div id="inbox-content" style="max-height: 400px; overflow-y: auto;"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="threadModal">
+    <div class="modal-box">
+      <button class="modal-close" data-close="threadModal">×</button>
+      <h4 class="mb-3">Conversa</h4>
+      <div id="threadModalBody"></div>
     </div>
   </div>
 
