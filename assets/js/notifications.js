@@ -1,6 +1,6 @@
 const CrecheNowNotifications = (() => {
   const { utils, NOTICE_TYPES, RESPONSE_TYPES, WEEKDAYS, WEEKDAYS_LONG, RELATIONSHIPS } = CrecheNowConfig;
-  const AVAILABLE_ICONS = ['🎵', '🤸', '📚', '🎭', '⚽', '🍎', '🎲', '🎂'];
+  const AVAILABLE_ICONS = ['🎵', '🤸', '📚', '', '👨👩‍‍👦', '🎭', '⚽', '🍎', '', '', '🎲', '🎂'];
 
   const openModal = (id) => document.getElementById(id)?.classList.add('active');
   const closeModal = (id) => document.getElementById(id)?.classList.remove('active');
@@ -58,11 +58,11 @@ const CrecheNowNotifications = (() => {
       el.className = `carousel-item ${index === 0 ? 'active' : ''}`;
       el.innerHTML = `
         <div class="notify-card ${n.read ? '' : 'unread'}" data-type="${utils.escapeHtml(n.type)}">
-          <div class="d-flex justify-content-between align-items-start mb-2">
-            <h5 class="fw-bold mb-0" style="font-size: 1.1rem;">${utils.escapeHtml(n.title)}</h5>
+          <div class="d-flex justify-content-between align-items-start mb-1">
+            <h5 class="fw-bold mb-0">${utils.escapeHtml(n.title)}</h5>
             <span class="badge ${n.read ? 'bg-secondary' : 'bg-warning text-dark'}">${n.read ? 'Lido' : 'Novo'}</span>
           </div>
-          <p class="text-muted mb-2" style="font-size: 0.95rem;">${utils.escapeHtml(n.body)}</p>
+          <p class="text-muted mb-1 notify-body">${utils.escapeHtml(n.body)}</p>
           ${responseZoneHTML(n, session)}
           <div class="d-flex justify-content-between align-items-center mt-auto gap-2">
             <small class="text-muted">${utils.formatDateTimeBR(n.date)}</small>
@@ -78,7 +78,6 @@ const CrecheNowNotifications = (() => {
         CrecheNowStorage.markAsRead(parseInt(btn.dataset.id));
         renderFeed(filter);
         updateInboxBadge();
-        showToast('Notificação marcada como lida.');
       });
     });
     _refreshCarouselInstance();
@@ -88,7 +87,7 @@ const CrecheNowNotifications = (() => {
     const el = document.getElementById('notifications-carousel');
     if (!el || !window.bootstrap?.Carousel) return;
     bootstrap.Carousel.getInstance(el)?.dispose();
-    new bootstrap.Carousel(el, { interval: 5000, ride: 'carousel' });
+    new bootstrap.Carousel(el, { interval: 6000, ride: 'carousel' });
   };
 
   const handleResponseDelegation = (e) => {
@@ -279,8 +278,7 @@ const CrecheNowNotifications = (() => {
       </div>`;
 
     if (view === 'week') {
-      const weekStart = utils.mondayOf(ref);
-      const week = utils.getWeekDates(weekStart);
+      const week = utils.getWeekDates(utils.mondayOf(ref));
       html += `<strong class="d-block small mb-2">Semana de ${utils.formatDateBR(week[0])} a ${utils.formatDateBR(week[5])}</strong>`;
       html += week.map(date => {
         const weekday = WEEKDAYS[utils.getWeekdayIndex(date)];
@@ -296,8 +294,7 @@ const CrecheNowNotifications = (() => {
         </div>`;
       }).join('');
     } else if (view === 'month') {
-      html += `<strong class="d-block small mb-2 text-capitalize">${ref.toLocaleString('pt-BR', { month: 'long', year: 'numeric' })}</strong>`;
-      html += '<div class="calendar-grid">';
+      html += `<strong class="d-block small mb-2 text-capitalize">${ref.toLocaleString('pt-BR', { month: 'long', year: 'numeric' })}</strong><div class="calendar-grid">`;
       html += utils.getMonthDates(ref.getFullYear(), ref.getMonth()).map(date => {
         const d = utils.parseISO(date);
         const on = CrecheNowStorage.isSchoolDay(date);
@@ -310,8 +307,7 @@ const CrecheNowNotifications = (() => {
       }).join('');
       html += '</div>';
     } else {
-      html += `<strong class="d-block small mb-2">${ref.getFullYear()}</strong>`;
-      html += '<div class="row g-2">';
+      html += `<strong class="d-block small mb-2">${ref.getFullYear()}</strong><div class="row g-2">`;
       for (let m = 0; m < 12; m++) {
         const dates = utils.getMonthDates(ref.getFullYear(), m);
         const entries = dates.map(d => byDate[d]).filter(c => c && c.meal);
@@ -911,10 +907,17 @@ const CrecheNowNotifications = (() => {
   };
 
   const handlePersonCreateInput = (e) => {
-    // sugestão de responsável no slot (aluno)
     const slotTarget = e.target.closest('[data-gfield="name"], [data-gfield="email"]');
-    if (slotTarget) { handleStudentLikeSlotSuggest(slotTarget); return; }
-    // sugestão de criança (responsável)
+    if (slotTarget) {
+      const block = slotTarget.closest('[data-slot-block]');
+      const suggest = block.querySelector('[data-role="suggest"]');
+      const root = block.closest('.modal-box') || document;
+      const exclude = Array.from(root.querySelectorAll('[data-slot-block]')).map(b => b.dataset.linked).filter(Boolean);
+      const matches = parentMatches(slotTarget.value, exclude);
+      suggest.innerHTML = matches.map(p => `<div class="suggest-chip">Encontrado: <strong>${utils.escapeHtml(p.name)}</strong> (${utils.escapeHtml(p.email || 'sem email')})
+        <button type="button" class="btn btn-sm btn-success ms-1" data-action="pick-guard" data-slot="${block.dataset.slotBlock}" data-person="${p.id}">Vincular</button></div>`).join('');
+      return;
+    }
     if (e.target.id === 'pc-child-query') {
       const q = e.target.value.trim().toLowerCase();
       const box = document.getElementById('pc-child-suggest');
@@ -922,16 +925,6 @@ const CrecheNowNotifications = (() => {
       box.innerHTML = matches.map(s => `<div class="suggest-chip"><strong>${utils.escapeHtml(s.name)}</strong> — Turma ${utils.escapeHtml(s.class)}
         <button type="button" class="btn btn-sm btn-success ms-1" data-action="pick-child" data-child="${s.id}">Vincular</button></div>`).join('');
     }
-  };
-
-  const handleStudentLikeSlotSuggest = (target) => {
-    const block = target.closest('[data-slot-block]');
-    const suggest = block.querySelector('[data-role="suggest"]');
-    const root = block.closest('.modal-box') || document;
-    const exclude = Array.from(root.querySelectorAll('[data-slot-block]')).map(b => b.dataset.linked).filter(Boolean);
-    const matches = parentMatches(target.value, exclude);
-    suggest.innerHTML = matches.map(p => `<div class="suggest-chip">Encontrado: <strong>${utils.escapeHtml(p.name)}</strong> (${utils.escapeHtml(p.email || 'sem email')})
-      <button type="button" class="btn btn-sm btn-success ms-1" data-action="pick-guard" data-slot="${block.dataset.slotBlock}" data-person="${p.id}">Vincular</button></div>`).join('');
   };
 
   const handlePersonCreateDelegation = (e) => {
@@ -952,8 +945,7 @@ const CrecheNowNotifications = (() => {
       return;
     }
     if (btn.dataset.action === 'unlink-guard') {
-      const block = container.querySelector(`[data-slot-block="${btn.dataset.slot}"]`);
-      block.dataset.linked = '';
+      container.querySelector(`[data-slot-block="${btn.dataset.slot}"]`).dataset.linked = '';
       refreshSlotBadges(container);
       return;
     }
@@ -978,9 +970,9 @@ const CrecheNowNotifications = (() => {
       if (type === 'student') {
         base.class = document.getElementById('pc-class').value;
         base.allergies = document.getElementById('pc-allergies').value.trim();
-        const slots = readGuardianSlots(container).map(s => ({ ...s }));
+        const slots = readGuardianSlots(container);
         const filled = slots.filter(s => s.name || s.linkedPersonId);
-        base.guardians = filled.length ? filled : [];
+        base.guardians = filled;
         base.parentIds = filled.map(s => s.linkedPersonId).filter(Boolean);
         created = CrecheNowStorage.addPerson(base);
         syncParentLinks(created.id, base.parentIds);
@@ -1015,6 +1007,14 @@ const CrecheNowNotifications = (() => {
         <div class="col-md-6 mb-3"><label class="form-label small fw-bold">Telefone</label><input type="text" class="form-control" id="pe-phone" value="${utils.escapeHtml(p.phone || '')}"></div>
       </div>
       <div class="mb-3"><label class="form-label small fw-bold">E-mail</label><input type="email" class="form-control" id="pe-email" value="${utils.escapeHtml(p.email || '')}"></div>`;
+
+    if (p.type === 'teacher') {
+      html += `<div class="mb-3"><label class="form-label small fw-bold">Turma que leciona</label>
+        <select class="form-select" id="pe-class">
+          <option value="A" ${p.class === 'A' ? 'selected' : ''}>A</option>
+          <option value="B" ${p.class === 'B' ? 'selected' : ''}>B</option>
+        </select></div>`;
+    }
 
     if (p.type === 'parent') {
       const linked = CrecheNowStorage.getStudents().filter(s => (s.parentIds || []).includes(p.id));
@@ -1072,12 +1072,15 @@ const CrecheNowNotifications = (() => {
       return;
     }
     if (btn.dataset.action === 'update-person') {
-      CrecheNowStorage.updatePerson(id, {
+      const patch = {
         name: document.getElementById('pe-name').value.trim(),
         birthDate: document.getElementById('pe-birth').value,
         phone: document.getElementById('pe-phone').value.trim(),
         email: document.getElementById('pe-email').value.trim()
-      });
+      };
+      const classSel = document.getElementById('pe-class');
+      if (classSel) patch.class = classSel.value;
+      CrecheNowStorage.updatePerson(id, patch);
       showToast('Cadastro atualizado.');
       closeModal('personEditModal');
       renderStudentManagement(); renderTeachersList(); renderParentsList();
@@ -1231,6 +1234,7 @@ const CrecheNowNotifications = (() => {
     const session = CrecheNowStorage.getSession();
     const recipient = CrecheNowStorage.getPerson(sel.value);
     CrecheNowStorage.addMessage({
+      threadId: 't_' + Date.now(),
       fromPersonId: session.personId, toPersonId: sel.value,
       fromName: session.name, toName: recipient?.name || '',
       fromRole: session.role, toRole: recipient?.type || '',
@@ -1242,6 +1246,8 @@ const CrecheNowNotifications = (() => {
     updateInboxBadge();
   };
 
+  const _threadIdOf = (m) => m.threadId || ('solo_' + m.id);
+
   const renderInbox = (tab = 'received') => {
     const container = document.getElementById('inbox-content');
     if (!container) return;
@@ -1249,62 +1255,98 @@ const CrecheNowNotifications = (() => {
     const msgs = CrecheNowStorage.getMessages();
 
     if (tab === 'received') {
-      let items = [];
+      let html = '';
       if (session.role === 'parent') {
-        items = [
-          ...CrecheNowStorage.getNotifications().map(n => ({ ...n, _kind: 'notice' })),
-          ...msgs.filter(m => m.toPersonId === session.personId).map(m => ({ ...m, _kind: 'message' }))
-        ];
-      } else {
-        items = msgs.filter(m => m.toPersonId === session.personId).map(m => ({ ...m, _kind: 'message' }));
+        html += CrecheNowStorage.getNotifications().map(n => `
+          <div class="message-item ${n.read ? '' : 'unread'}">
+            <div class="msg-header"><strong>[Comunicado] ${utils.escapeHtml(n.title)}</strong><small>${utils.formatDateTimeBR(n.date)}</small></div>
+            <div class="msg-body">${utils.escapeHtml(n.body)}</div>
+            ${responseZoneHTML(n, session)}
+            ${!n.read ? `<button class="btn btn-sm btn-success mt-2" data-action="mark-read" data-item-id="${n.id}">Marcar como lido</button>` : '<span class="badge bg-success mt-2">Lido</span>'}
+          </div>`).join('');
       }
-      items.sort((a, b) => new Date(b.date) - new Date(a.date));
-      container.innerHTML = items.length ? items.map(m => {
-        const title = m._kind === 'notice' ? `[Comunicado] ${m.title}` : `De: ${m.fromName}`;
-        const body = m._kind === 'notice' ? m.body : m.message;
-        return `<div class="message-item ${m.read ? '' : 'unread'}">
-          <div class="msg-header"><strong>${utils.escapeHtml(title)}</strong><small>${utils.formatDateTimeBR(m.date)}</small></div>
-          <div class="msg-body">${utils.escapeHtml(body)}</div>
-          ${m._kind === 'notice' ? responseZoneHTML(m, session) : ''}
-          ${!m.read ? `<button class="btn btn-sm btn-success mt-2" data-action="mark-read" data-item-id="${m.id}" data-kind="${m._kind}">Marcar como lido</button>` : '<span class="badge bg-success mt-2">Lido</span>'}</div>`;
-      }).join('') : '<p class="text-center text-muted py-3">Nada recebido.</p>';
-
-      container.querySelectorAll('[data-action="mark-read"]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const id = parseInt(btn.dataset.itemId);
-          btn.dataset.kind === 'notice' ? CrecheNowStorage.markAsRead(id) : CrecheNowStorage.markMessageAsRead(id);
-          renderInbox(tab);
-          updateInboxBadge();
-        });
+      const threadsMap = new Map();
+      msgs.filter(m => m.toPersonId === session.personId).forEach(m => {
+        const t = _threadIdOf(m);
+        if (!threadsMap.has(t)) threadsMap.set(t, []);
+        threadsMap.get(t).push(m);
       });
+      const threads = [...threadsMap.entries()].sort((a, b) => new Date(b[1][b[1].length - 1].date) - new Date(a[1][a[1].length - 1].date));
+      html += threads.map(([tid, list]) => {
+        const last = list[list.length - 1];
+        const unread = list.filter(m => !m.read).length;
+        return `<div class="message-item ${unread ? 'unread' : ''}">
+          <div class="msg-header"><strong>Conversa com ${utils.escapeHtml(last.fromName)}</strong><small>${utils.formatDateTimeBR(last.date)}</small></div>
+          <div class="msg-body">${utils.escapeHtml(last.message)}</div>
+          <div class="mt-2 d-flex gap-2 align-items-center">
+            <button class="btn btn-sm btn-success" data-action="open-thread" data-thread="${tid}">Abrir e responder</button>
+            ${unread ? `<span class="badge bg-danger">${unread} nova(s)</span>` : ''}
+          </div></div>`;
+      }).join('');
+      container.innerHTML = html || '<p class="text-center text-muted py-3">Nada recebido.</p>';
     } else {
       const sent = msgs.filter(m => m.fromPersonId === session.personId).sort((a, b) => new Date(b.date) - new Date(a.date));
       container.innerHTML = sent.length ? sent.map(m => `
         <div class="message-item sent">
           <div class="msg-header"><strong>Para: ${utils.escapeHtml(m.toName)}</strong><small>${utils.formatDateTimeBR(m.date)}</small></div>
-          <div class="msg-body">${utils.escapeHtml(m.message)}</div></div>`).join('')
+          <div class="msg-body">${utils.escapeHtml(m.message)}</div>
+          <button class="btn btn-sm btn-outline-success mt-2" data-action="open-thread" data-thread="${_threadIdOf(m)}">Abrir conversa</button>
+        </div>`).join('')
         : '<p class="text-center text-muted py-3">Nada enviado.</p>';
     }
   };
 
-  const renderParentMessagesForStaff = () => {
-    const container = document.getElementById('parent-messages-list');
-    if (!container) return;
-    const msgs = CrecheNowStorage.getMessages();
-    container.innerHTML = msgs.length ? msgs.map(m => `
-      <div class="message-item ${m.read ? '' : 'unread'} mb-2">
-        <div class="msg-header"><strong>${utils.escapeHtml(m.fromName)}</strong><small>${utils.formatDateTimeBR(m.date)}</small></div>
-        <div class="msg-body">${utils.escapeHtml(m.message)}</div>
-        <small class="text-muted">Para: ${utils.escapeHtml(m.toName)}</small>
-        ${!m.read ? `<button class="btn btn-sm btn-success mt-2" data-action="mark-msg-read" data-id="${m.id}">Marcar como lido</button>` : '<span class="badge bg-success mt-2">Lido</span>'}</div>`).join('')
-      : '<p class="text-center text-muted py-3">Nenhum recado.</p>';
-    container.querySelectorAll('[data-action="mark-msg-read"]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        CrecheNowStorage.markMessageAsRead(parseInt(btn.dataset.id));
-        renderParentMessagesForStaff();
-        updateInboxBadge();
-      });
+  const handleInboxDelegation = (e) => {
+    const btn = e.target.closest('[data-action]');
+    if (!btn) return;
+    if (btn.dataset.action === 'mark-read') {
+      CrecheNowStorage.markAsRead(parseInt(btn.dataset.itemId));
+      const active = document.querySelector('[data-inbox-tab].active');
+      renderInbox(active?.dataset.inboxTab || 'received');
+      updateInboxBadge();
+    }
+    if (btn.dataset.action === 'open-thread') openThread(btn.dataset.thread);
+  };
+
+  const openThread = (tid) => {
+    const session = CrecheNowStorage.getSession();
+    const list = CrecheNowStorage.getMessages()
+      .filter(m => _threadIdOf(m) === tid)
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+    if (!list.length) return;
+    list.filter(m => m.toPersonId === session.personId && !m.read).forEach(m => CrecheNowStorage.markMessageAsRead(m.id));
+    const otherId = list.find(m => m.fromPersonId !== session.personId)?.fromPersonId || list[0].toPersonId;
+    const other = CrecheNowStorage.getPerson(otherId);
+    document.getElementById('threadModalBody').innerHTML = `
+      <h6 class="small fw-bold mb-2">Conversa com ${utils.escapeHtml(other?.name || '?')}</h6>
+      <div class="thread-list mb-3">${list.map(m => `
+        <div class="thread-bubble ${m.fromPersonId === session.personId ? 'mine' : ''}">
+          <small class="text-muted">${utils.escapeHtml(m.fromName)} • ${utils.formatDateTimeBR(m.date)}</small>
+          <div>${utils.escapeHtml(m.message)}</div>
+        </div>`).join('')}</div>
+      <textarea class="form-control mb-2" id="thread-reply" rows="3" placeholder="Escreva sua resposta..."></textarea>
+      <button class="btn btn-success w-100" data-action="send-reply" data-thread="${tid}" data-to="${otherId}">Enviar resposta</button>`;
+    openModal('threadModal');
+    updateInboxBadge();
+  };
+
+  const handleThreadDelegation = (e) => {
+    const btn = e.target.closest('[data-action="send-reply"]');
+    if (!btn) return;
+    const session = CrecheNowStorage.getSession();
+    const value = document.getElementById('thread-reply').value.trim();
+    if (!value) { showToast('Escreva sua resposta.', 'warning'); return; }
+    const to = CrecheNowStorage.getPerson(btn.dataset.to);
+    CrecheNowStorage.addMessage({
+      threadId: btn.dataset.thread,
+      fromPersonId: session.personId, toPersonId: btn.dataset.to,
+      fromName: session.name, toName: to?.name || '',
+      fromRole: session.role, toRole: to?.type || '',
+      childId: null, message: value
     });
+    showToast('Resposta enviada.');
+    openThread(btn.dataset.thread);
+    updateInboxBadge();
   };
 
   const updateInboxBadge = () => {
@@ -1354,11 +1396,25 @@ const CrecheNowNotifications = (() => {
 
   const initRealTimeSync = () => {
     window.addEventListener('storage', (e) => {
+      const session = CrecheNowStorage.getSession();
       if (e.key === 'crechenow_notifications') { renderFeed(); updateInboxBadge(); renderSent(); }
       if (e.key === 'crechenow_notice_responses') { renderSent(); }
-      if (e.key === 'crechenow_messages') { renderInbox('received'); updateInboxBadge(); renderParentMessagesForStaff(); }
+      if (e.key === 'crechenow_messages') {
+        // aviso de nova mensagem para a outra parte
+        try {
+          const oldIds = new Set((JSON.parse(e.oldValue || '[]') || []).map(m => m.id));
+          const fresh = (JSON.parse(e.newValue || '[]') || []).filter(m => !oldIds.has(m.id));
+          const mine = fresh.filter(m => m.toPersonId === session?.personId);
+          if (mine.length) showToast(`Nova mensagem de ${mine[0].fromName}.`);
+        } catch {}
+        const inboxOpen = document.getElementById('inboxModal')?.classList.contains('active');
+        if (inboxOpen) {
+          const active = document.querySelector('[data-inbox-tab].active');
+          renderInbox(active?.dataset.inboxTab || 'received');
+        }
+        updateInboxBadge();
+      }
       if (e.key === 'crechenow_routines') {
-        const session = CrecheNowStorage.getSession();
         if (session?.role === 'parent') {
           const sel = document.getElementById('childSelect');
           const parent = CrecheNowStorage.getPerson(session.personId);
@@ -1389,7 +1445,8 @@ const CrecheNowNotifications = (() => {
     renderTeachersList, renderParentsList, renderLoginsList, handleDeleteLogin,
     renderLoginForm, handleLoginRoleChange, handleCreateLogin,
     renderNoticeForm, handleSendNotice, renderSent, openResponsesModal,
-    renderMessageForm, handleSendMessage, renderInbox, renderParentMessagesForStaff,
+    renderMessageForm, handleSendMessage, renderInbox, handleInboxDelegation,
+    openThread, handleThreadDelegation,
     updateInboxBadge, renderMyData, handleExportMyData,
     showToast, initRealTimeSync
   };
