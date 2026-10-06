@@ -2,13 +2,29 @@ const CrecheNowStorage = (() => {
   const { utils } = CrecheNowConfig;
   const QUEUE_KEY = 'crechenow_offline_queue';
 
-  const DEFAULT_SCHOOL_CALENDAR = { schoolDays: [1, 2, 3, 4, 5] };
+  const DEFAULT_SCHOOL_CALENDAR = { schoolDays: [1, 2, 3, 4, 5], overrides: {} };
 
   const DEFAULT_PEOPLE = [
-    { id: 'p_student_1', type: 'student', name: 'Joãozinho Silva', birthDate: '2022-03-15', parentIds: ['p_parent_1'], phone: '', email: '', allergies: 'Amendoim', class: 'A' },
-    { id: 'p_student_2', type: 'student', name: 'Mariazinha Souza', birthDate: '2022-05-20', parentIds: ['p_parent_2'], phone: '', email: '', allergies: '', class: 'A' },
-    { id: 'p_student_3', type: 'student', name: 'Pedrinho Santos', birthDate: '2021-11-08', parentIds: ['p_parent_3'], phone: '', email: '', allergies: 'Lactose', class: 'B' },
-    { id: 'p_student_4', type: 'student', name: 'Aninha Oliveira', birthDate: '2022-01-30', parentIds: ['p_parent_4'], phone: '', email: '', allergies: '', class: 'B' },
+    { id: 'p_student_1', type: 'student', name: 'Joãozinho Silva', birthDate: '2022-03-15', class: 'A', allergies: 'Amendoim',
+      guardians: [
+        { relation: 'Pai', name: 'Responsável João Silva', phone: '(11) 99999-1111', email: 'pai@email.com', linkedPersonId: 'p_parent_1' },
+        { relation: 'Mãe', name: '', phone: '', email: '', linkedPersonId: null }
+      ], parentIds: ['p_parent_1'] },
+    { id: 'p_student_2', type: 'student', name: 'Mariazinha Souza', birthDate: '2022-05-20', class: 'A', allergies: '',
+      guardians: [
+        { relation: 'Mãe', name: 'Responsável Maria Souza', phone: '', email: 'mae@email.com', linkedPersonId: 'p_parent_2' },
+        { relation: 'Pai', name: '', phone: '', email: '', linkedPersonId: null }
+      ], parentIds: ['p_parent_2'] },
+    { id: 'p_student_3', type: 'student', name: 'Pedrinho Santos', birthDate: '2021-11-08', class: 'B', allergies: 'Lactose',
+      guardians: [
+        { relation: 'Pai', name: 'Responsável Pedro Santos', phone: '', email: 'pai2@email.com', linkedPersonId: 'p_parent_3' },
+        { relation: 'Mãe', name: '', phone: '', email: '', linkedPersonId: null }
+      ], parentIds: ['p_parent_3'] },
+    { id: 'p_student_4', type: 'student', name: 'Aninha Oliveira', birthDate: '2022-01-30', class: 'B', allergies: '',
+      guardians: [
+        { relation: 'Mãe', name: 'Responsável Ana Oliveira', phone: '', email: 'mae2@email.com', linkedPersonId: 'p_parent_4' },
+        { relation: 'Pai', name: '', phone: '', email: '', linkedPersonId: null }
+      ], parentIds: ['p_parent_4'] },
     { id: 'p_parent_1', type: 'parent', name: 'Responsável João Silva', birthDate: '1985-07-22', phone: '(11) 99999-1111', email: 'pai@email.com', linkedStudentIds: ['p_student_1'] },
     { id: 'p_parent_2', type: 'parent', name: 'Responsável Maria Souza', birthDate: '1988-03-14', phone: '', email: 'mae@email.com', linkedStudentIds: ['p_student_2'] },
     { id: 'p_parent_3', type: 'parent', name: 'Responsável Pedro Santos', birthDate: '1984-09-01', phone: '', email: 'pai2@email.com', linkedStudentIds: ['p_student_3'] },
@@ -30,11 +46,16 @@ const CrecheNowStorage = (() => {
 
   const seedWeek = utils.getWeekDates();
   const DEFAULT_AGENDA = [
-    { date: seedWeek[0], icon: '🎵', title: 'Roda de conversa', time: '08:00' },
-    { date: seedWeek[1], icon: '🤸', title: 'Psicomotora', time: '10:30' },
-    { date: seedWeek[2], icon: '📚', title: 'Soneca & Histórias', time: '14:00' },
-    { date: seedWeek[3], icon: '🎨', title: 'Artes e pintura', time: '09:00' },
-    { date: seedWeek[4], icon: '👩‍👧‍👦', title: 'Dia da Família', time: '15:00' }
+    { class: 'A', date: seedWeek[0], icon: '🎵', title: 'Roda de conversa', time: '08:00' },
+    { class: 'A', date: seedWeek[1], icon: '🤸', title: 'Psicomotora', time: '10:30' },
+    { class: 'A', date: seedWeek[2], icon: '📚', title: 'Soneca & Histórias', time: '14:00' },
+    { class: 'A', date: seedWeek[3], icon: '🎨', title: 'Artes e pintura', time: '09:00' },
+    { class: 'A', date: seedWeek[4], icon: '👨‍👩‍👧‍👦', title: 'Dia da Família', time: '15:00' },
+    { class: 'B', date: seedWeek[0], icon: '📖', title: 'Contação de histórias', time: '08:00' },
+    { class: 'B', date: seedWeek[1], icon: '⚽', title: 'Recreio dirigido', time: '10:30' },
+    { class: 'B', date: seedWeek[2], icon: '🎨', title: 'Artes e pintura', time: '14:00' },
+    { class: 'B', date: seedWeek[3], icon: '🎵', title: 'Musicalização', time: '09:00' },
+    { class: 'B', date: seedWeek[4], icon: '🌳', title: 'Passeio ao jardim', time: '15:00' }
   ];
   const DEFAULT_CARDAPIO = [
     { date: seedWeek[0], meal: 'Arroz, feijão, frango grelhado e salada.' },
@@ -49,7 +70,17 @@ const CrecheNowStorage = (() => {
 
   const getSchoolCalendar = () => get('crechenow_school_calendar') || DEFAULT_SCHOOL_CALENDAR;
   const setSchoolCalendar = (cal) => set('crechenow_school_calendar', cal);
-  const isSchoolDay = (isoDate) => getSchoolCalendar().schoolDays.includes(utils.getWeekdayIndex(isoDate));
+  const isSchoolDay = (iso) => {
+    const cal = getSchoolCalendar();
+    if (cal.overrides && (iso in cal.overrides)) return cal.overrides[iso];
+    return cal.schoolDays.includes(utils.getWeekdayIndex(iso));
+  };
+  const setSchoolCalendarOverride = (iso, hasSchool) => {
+    const cal = getSchoolCalendar();
+    cal.overrides = cal.overrides || {};
+    cal.overrides[iso] = hasSchool;
+    setSchoolCalendar(cal);
+  };
 
   const getPeople = () => get('crechenow_people') || DEFAULT_PEOPLE;
   const setPeople = (people) => set('crechenow_people', people);
@@ -66,7 +97,17 @@ const CrecheNowStorage = (() => {
     const i = people.findIndex(p => p.id === id);
     if (i !== -1) { people[i] = { ...people[i], ...patch }; setPeople(people); }
   };
-  const removePerson = (id) => setPeople(getPeople().filter(p => p.id !== id));
+  const removePerson = (id) => {
+    getPeople().forEach(p => {
+      if (p.type === 'parent' && (p.linkedStudentIds || []).includes(id)) {
+        updatePerson(p.id, { linkedStudentIds: p.linkedStudentIds.filter(x => x !== id) });
+      }
+      if (p.type === 'student' && (p.parentIds || []).includes(id)) {
+        updatePerson(p.id, { parentIds: p.parentIds.filter(x => x !== id) });
+      }
+    });
+    setPeople(getPeople().filter(p => p.id !== id));
+  };
   const getStudents = () => getPeople().filter(p => p.type === 'student');
   const getParents = () => getPeople().filter(p => p.type === 'parent');
   const getTeachers = () => getPeople().filter(p => p.type === 'teacher');
@@ -91,15 +132,18 @@ const CrecheNowStorage = (() => {
   const getSession = () => {
     const s = get('crechenow_session');
     if (!s) return null;
-    if ((Date.now() - s.createdAt) / 3600000 > CrecheNowConfig.SESSION_TTL_HOURS) {
-      set('crechenow_session', null);
-      return null;
-    }
+    if ((Date.now() - s.createdAt) / 3600000 > CrecheNowConfig.SESSION_TTL_HOURS) { set('crechenow_session', null); return null; }
     return s;
   };
 
   const getAgenda = () => get('crechenow_agenda') || DEFAULT_AGENDA;
-  const setAgenda = (a) => set('crechenow_agenda', a);
+  const setAgenda = (list) => set('crechenow_agenda', list);
+  const getAgendaForWeek = (cls, weekDates) => getAgenda().filter(a => (!cls || a.class === cls) && weekDates.includes(a.date));
+  const setAgendaWeek = (cls, weekDates, items) => {
+    const rest = getAgenda().filter(a => !(a.class === cls && weekDates.includes(a.date)));
+    setAgenda([...rest, ...items]);
+  };
+
   const getCardapio = () => get('crechenow_cardapio') || DEFAULT_CARDAPIO;
   const setCardapio = (c) => set('crechenow_cardapio', c);
 
@@ -114,6 +158,15 @@ const CrecheNowStorage = (() => {
     const i = list.findIndex(x => x.id === id);
     if (i !== -1) { list[i].read = true; set('crechenow_notifications', list); }
   };
+
+  const getNoticeResponses = () => get('crechenow_notice_responses') || [];
+  const addNoticeResponse = (r) => {
+    const list = getNoticeResponses().filter(x => !(x.noticeId === r.noticeId && x.personId === r.personId));
+    list.unshift({ ...r, id: Date.now(), date: utils.nowLocalISO() });
+    set('crechenow_notice_responses', list);
+  };
+  const getResponsesForNotice = (id) => getNoticeResponses().filter(r => r.noticeId === id);
+  const getMyResponse = (noticeId, personId) => getNoticeResponses().find(r => r.noticeId === noticeId && r.personId === personId);
 
   const getMessages = () => get('crechenow_messages') || [];
   const addMessage = (m) => {
@@ -140,27 +193,24 @@ const CrecheNowStorage = (() => {
     return getRoutines().some(r => r.studentId === studentId && r.date.startsWith(today));
   };
 
-  const queueAction = (action) => {
-    const q = get(QUEUE_KEY) || [];
-    q.push({ ...action, timestamp: Date.now() });
-    set(QUEUE_KEY, q);
-  };
+  const queueAction = (action) => { const q = get(QUEUE_KEY) || []; q.push({ ...action, timestamp: Date.now() }); set(QUEUE_KEY, q); };
   const processQueue = () => {
     const q = get(QUEUE_KEY) || [];
     if (!q.length || !navigator.onLine) return;
-    console.log('Sincronizando fila offline (stub):', q.length, 'ações');
     set(QUEUE_KEY, []);
   };
 
   return {
     get, set, clear: () => localStorage.clear(),
-    getSchoolCalendar, setSchoolCalendar, isSchoolDay,
+    getSchoolCalendar, setSchoolCalendar, isSchoolDay, setSchoolCalendarOverride,
     getPeople, setPeople, getPerson, addPerson, updatePerson, removePerson,
     getStudents, getParents, getTeachers,
     getLogins, setLogins, addLogin, removeLogin, authenticate,
     setSession, getSession,
-    getAgenda, setAgenda, getCardapio, setCardapio,
+    getAgenda, setAgenda, getAgendaForWeek, setAgendaWeek,
+    getCardapio, setCardapio,
     getNotifications, addNotification, markAsRead,
+    getNoticeResponses, addNoticeResponse, getResponsesForNotice, getMyResponse,
     getMessages, addMessage, markMessageAsRead,
     getRoutines, addRoutine, getRoutinesByStudent, hasRoutineTodayForStudent,
     queueAction, processQueue
