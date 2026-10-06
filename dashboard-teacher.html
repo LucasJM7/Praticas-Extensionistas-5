@@ -12,7 +12,7 @@
 </head>
 <body class="bg-light">
 
-  <nav class="navbar navbar-expand-lg navbar-dark bg-info shadow-sm">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container-fluid px-4">
       <a class="navbar-brand fw-bold" href="#">CRECHENOW</a>
       <div class="d-flex align-items-center">
@@ -27,44 +27,40 @@
 
       <div class="side-column">
         <div class="card shadow-sm border-0">
-          <div class="card-header bg-white py-2">
-            <h5 class="mb-0 fs-6">Minha Turma <span id="teacherClassDisplay" class="badge bg-info text-dark"></span></h5>
+          <div class="card-header bg-primary text-white py-2">
+            <h5 class="mb-0 fs-6">Minha Turma <span id="teacherClassDisplay" class="badge bg-success text-white"></span></h5>
           </div>
           <div class="card-body p-0">
             <div class="table-responsive h-100">
               <table class="table table-hover mb-0 align-middle">
-                <thead class="table-light sticky-top">
-                  <tr><th>Nome</th><th>Hoje</th></tr>
-                </thead>
+                <thead class="table-light sticky-top"><tr><th>Nome</th><th>Hoje</th></tr></thead>
                 <tbody id="teacher-students-list"></tbody>
               </table>
             </div>
           </div>
+          <div class="card-footer bg-white small text-muted">Clique em um aluno para ver a ficha.</div>
         </div>
       </div>
 
       <div class="center-column">
 
         <div class="btn-group mb-2" role="group">
-          <button class="btn btn-outline-info active" id="showTeacherRoutineBtn">Rotina</button>
-          <button class="btn btn-outline-info" id="showTeacherAgendaBtn">Agenda</button>
-          <button class="btn btn-outline-info" id="showTeacherCardapioBtn">Cardápio</button>
+          <button class="btn btn-outline-success active" id="showTeacherRoutineBtn">Rotina</button>
+          <button class="btn btn-outline-success" id="showTeacherAgendaBtn">Agenda</button>
+          <button class="btn btn-outline-success" id="showTeacherCardapioBtn">Cardápio</button>
         </div>
 
         <div id="teacherCenterContent">
           <div class="card shadow-sm border-0 teacher-view" data-view="routine" style="display: flex;">
-            <div class="card-header bg-info text-white py-2">
+            <div class="card-header bg-success text-white py-2">
               <h5 class="mb-0 fs-6">Registro de Rotina Diária</h5>
             </div>
             <div class="card-body">
               <form id="teacherRoutineForm" class="needs-validation h-100 d-flex flex-column" novalidate>
                 <div class="mb-3">
                   <label class="form-label small fw-bold">Aluno</label>
-                  <select class="form-select" id="routineStudentSelect" required>
-                    <option value="">Escolha um aluno...</option>
-                  </select>
+                  <select class="form-select" id="routineStudentSelect" required><option value="">Escolha um aluno...</option></select>
                 </div>
-
                 <div class="mb-3">
                   <label class="form-label small fw-bold d-block mb-1">Presença</label>
                   <select class="form-select" id="routineAttendance" required>
@@ -73,7 +69,6 @@
                     <option value="absent">Falta</option>
                   </select>
                 </div>
-
                 <div id="routineQuestionsContainer" class="mb-3 flex-grow-1 d-none">
                   <label class="form-label small fw-bold">Avaliação do Dia</label>
                   <div class="table-responsive">
@@ -92,35 +87,37 @@
                     <textarea class="form-control" id="routineComment" rows="2" placeholder="Detalhes sobre o dia..."></textarea>
                   </div>
                 </div>
-
                 <div class="d-flex gap-2">
-                  <button type="submit" class="btn btn-info text-white flex-fill">Salvar Rotina</button>
+                  <button type="submit" class="btn btn-success flex-fill">Salvar Rotina</button>
                 </div>
               </form>
             </div>
           </div>
 
           <div class="card shadow-sm border-0 teacher-view" data-view="agenda" style="display: none;">
-            <div class="card-header bg-info text-white py-2">
-              <h5 class="mb-0 fs-6">Agenda Semanal</h5>
+            <div class="card-header bg-success text-white py-2 d-flex justify-content-between align-items-center">
+              <h5 class="mb-0 fs-6">Agenda Semanal da Turma</h5>
+              <button class="btn btn-sm btn-light text-success fw-bold" id="openAgendaEditorBtn">Editar Agenda</button>
             </div>
             <div class="card-body" id="agenda-list"></div>
           </div>
 
           <div class="card shadow-sm border-0 teacher-view" data-view="cardapio" style="display: none;">
-            <div class="card-header bg-info text-white py-2">
+            <div class="card-header bg-success text-white py-2">
               <h5 class="mb-0 fs-6">Cardápio Semanal</h5>
             </div>
             <div class="card-body" id="cardapio-list"></div>
+            <div class="card-footer bg-white">
+              <small class="fw-bold">Alergias na turma (atenção ao servir):</small>
+              <div id="teacher-allergy-list" class="small"></div>
+            </div>
           </div>
         </div>
 
         <div class="d-flex gap-2 justify-content-center" style="flex-shrink: 0;">
-          <button class="btn btn-primary d-flex align-items-center gap-2" id="openTeacherMsgModalBtn">
-            <span>+</span> Enviar Recado
-          </button>
+          <button class="btn btn-primary d-flex align-items-center gap-2" id="openTeacherMsgModalBtn">Enviar Recado</button>
           <button class="btn btn-outline-primary d-flex align-items-center gap-2 position-relative" id="openTeacherInboxModalBtn">
-            <span>i</span> Mensagens
+            Mensagens
             <span id="inboxBadge" class="inbox-badge">0</span>
           </button>
         </div>
@@ -129,7 +126,7 @@
 
       <div class="side-column">
         <div class="card shadow-sm border-0">
-          <div class="card-header bg-white py-2">
+          <div class="card-header bg-primary text-white py-2">
             <h5 class="mb-0 fs-6">Últimos Registros</h5>
           </div>
           <div class="card-body p-0">
@@ -140,6 +137,26 @@
 
     </div>
   </main>
+
+  <div class="modal-overlay" id="agendaEditorModal">
+    <div class="modal-box">
+      <button class="modal-close" data-close="agendaEditorModal">×</button>
+      <h4 class="mb-3">Editar Agenda da Turma</h4>
+      <p class="small text-muted">Edite a semana atual ou navegue para as próximas. Dias sem aula ficam bloqueados.</p>
+      <form id="agendaEditorForm">
+        <div id="agendaEditorContainer"></div>
+        <button type="submit" class="btn btn-success w-100">Salvar Agenda da Semana</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="studentViewModal">
+    <div class="modal-box">
+      <button class="modal-close" data-close="studentViewModal">×</button>
+      <h4 class="mb-3">Ficha do Aluno</h4>
+      <div id="studentViewBody"></div>
+    </div>
+  </div>
 
   <div class="modal-overlay" id="messageFormModal">
     <div class="modal-box">
@@ -173,8 +190,7 @@
       const btn = e.target.closest('#showTeacherRoutineBtn, #showTeacherAgendaBtn, #showTeacherCardapioBtn');
       if (!btn) return;
       document.querySelectorAll('.teacher-view').forEach(v => v.style.display = 'none');
-      document.querySelectorAll('#showTeacherRoutineBtn, #showTeacherAgendaBtn, #showTeacherCardapioBtn')
-        .forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#showTeacherRoutineBtn, #showTeacherAgendaBtn, #showTeacherCardapioBtn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const view = btn.id === 'showTeacherRoutineBtn' ? 'routine' : btn.id === 'showTeacherAgendaBtn' ? 'agenda' : 'cardapio';
       document.querySelector(`.teacher-view[data-view="${view}"]`).style.display = 'flex';
