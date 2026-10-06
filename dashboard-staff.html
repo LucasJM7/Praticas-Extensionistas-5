@@ -26,51 +26,52 @@
     <div class="dashboard-row">
 
       <div class="side-column">
-        <div class="card shadow-sm border-0">
-          <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fs-6">Ações Rápidas</h5>
-            <button class="btn btn-sm btn-light" id="openParentMsgsBtn">Recados Recebidos</button>
-          </div>
-          <div class="card-body">
-            <div class="d-grid gap-2 mb-3">
-              <button class="btn btn-primary w-100" id="openNoticeBtn">+ Novo Comunicado</button>
-              <button class="btn btn-outline-primary w-100" id="openMessageBtn">+ Enviar Recado</button>
-            </div>
-            <hr>
-            <h6 class="small fw-bold">Agenda, Cardápio e Calendário</h6>
-            <div class="d-grid gap-2 mb-3">
-              <button class="btn btn-outline-primary w-100" id="openAgendaEditorBtn">Editar Agenda da Semana</button>
-              <button class="btn btn-outline-primary w-100" id="openCardapioEditorBtn">Editar Cardápio da Semana</button>
-              <button class="btn btn-outline-secondary w-100" id="openSchoolCalendarBtn">Calendário de Aulas</button>
-              <button class="btn btn-outline-secondary w-100" id="openCalendarBtn">Ver Calendário (Mês/Ano)</button>
-            </div>
-            <hr>
-            <h6 class="small fw-bold">Cadastros</h6>
-            <div class="d-grid gap-2">
-              <button class="btn btn-outline-dark w-100" id="openAddPersonBtn">+ Cadastrar Pessoa</button>
-              <button class="btn btn-outline-dark w-100" id="openAddLoginBtn">+ Novo Login</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="center-column">
         <div class="card shadow-sm border-0" style="flex: 1; min-height: 0;">
           <div class="card-header bg-white py-2">
-            <h5 class="mb-0 fs-6">Histórico de Comunicados Enviados</h5>
+            <h5 class="mb-0 fs-6">Histórico de Comunicados</h5>
           </div>
           <div class="card-body p-0">
             <div class="table-responsive h-100">
               <table class="table table-hover mb-0 align-middle">
                 <thead class="table-light sticky-top">
-                  <tr><th>Título</th><th>Tipo</th><th>Data/Hora</th><th>Resposta</th></tr>
+                  <tr><th>Título</th><th>Tipo</th><th>Data</th><th>Respostas</th></tr>
                 </thead>
                 <tbody id="sent-notifications"></tbody>
               </table>
             </div>
           </div>
         </div>
+      </div>
 
+      <div class="center-column">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-success text-white py-2 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fs-6">Ações Rápidas</h5>
+            <button class="btn btn-sm btn-light" id="openParentMsgsBtn">Recados Recebidos</button>
+          </div>
+          <div class="card-body">
+            <div class="d-grid gap-2 mb-3">
+              <button class="btn btn-success w-100" id="openNoticeBtn">Novo Comunicado</button>
+              <button class="btn btn-outline-success w-100" id="openMessageBtn">Enviar Recado</button>
+            </div>
+            <hr>
+            <h6 class="small fw-bold">Cardápio e Calendários</h6>
+            <div class="d-grid gap-2 mb-3">
+              <button class="btn btn-outline-success w-100" id="openCardapioEditorBtn">Editar Cardápio</button>
+              <button class="btn btn-outline-success w-100" id="openSchoolCalendarBtn">Calendário de Aulas</button>
+              <button class="btn btn-outline-secondary w-100" id="openCalendarBtn">Ver Calendário (Mês/Ano)</button>
+            </div>
+            <hr>
+            <h6 class="small fw-bold">Cadastros</h6>
+            <div class="d-grid gap-2">
+              <button class="btn btn-outline-success w-100" id="openAddPersonBtn">Cadastrar Pessoa</button>
+              <button class="btn btn-outline-success w-100" id="openAddLoginBtn">Novo Login</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-column">
         <div class="card shadow-sm border-0" style="flex: 1; min-height: 0;">
           <ul class="nav nav-tabs mt-2 px-3">
             <li class="nav-item"><button class="nav-link active" data-staff-tab="students">Alunos</button></li>
@@ -120,41 +121,27 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="agendaEditorModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="agendaEditorModal">×</button>
-      <h4 class="mb-3">Editar Agenda da Semana Atual</h4>
-      <form id="agendaEditorForm">
-        <p class="small text-muted">Segunda a sábado da semana atual. Dias sem aula (definidos no Calendário de Aulas) aparecem bloqueados.</p>
-        <div id="agendaEditorContainer"></div>
-        <button type="submit" class="btn btn-primary w-100">Salvar Agenda</button>
-      </form>
-    </div>
-  </div>
-
   <div class="modal-overlay" id="cardapioEditorModal">
-    <div class="modal-box">
+    <div class="modal-box" style="max-width: 900px;">
       <button class="modal-close" data-close="cardapioEditorModal">×</button>
-      <h4 class="mb-3">Editar Cardápio da Semana Atual</h4>
+      <h4 class="mb-3">Editar Cardápio</h4>
       <form id="cardapioEditorForm">
-        <p class="small text-muted">Segunda a sábado da semana atual. Dias sem aula aparecem bloqueados.</p>
         <div id="cardapioEditorContainer"></div>
-        <button type="submit" class="btn btn-primary w-100">Salvar Cardápio</button>
+        <button type="submit" class="btn btn-success w-100 mt-2">Salvar</button>
       </form>
     </div>
   </div>
 
   <div class="modal-overlay" id="schoolCalendarModal">
-    <div class="modal-box">
+    <div class="modal-box" style="max-width: 900px;">
       <button class="modal-close" data-close="schoolCalendarModal">×</button>
       <h4 class="mb-3">Calendário de Aulas</h4>
-      <p class="small text-muted">Marque os dias da semana em que há aula. Agenda e cardápio mostrarão "Sem aula" nos dias desmarcados.</p>
       <div id="schoolCalendarBody"></div>
     </div>
   </div>
 
-  <div class="modal-overlay" id="calendarModal">
-    <div class="modal-box" style="max-width: 900px;">
+  <div class="modal-overlay calendar-modal" id="calendarModal">
+    <div class="modal-box">
       <button class="modal-close" data-close="calendarModal">×</button>
       <h4 class="mb-3">Calendário</h4>
       <div class="btn-group btn-group-sm mb-3">
@@ -166,17 +153,33 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="personFormModal">
+  <div class="modal-overlay" id="personCreateModal">
     <div class="modal-box">
-      <button class="modal-close" data-close="personFormModal">×</button>
-      <h4 class="mb-3">Cadastro de Pessoa</h4>
+      <button class="modal-close" data-close="personCreateModal">×</button>
+      <h4 class="mb-3">Cadastrar Pessoa</h4>
       <div class="btn-group btn-group-sm mb-3 w-100">
-        <button type="button" class="btn btn-outline-primary" data-person-type="student">Aluno</button>
-        <button type="button" class="btn btn-outline-primary" data-person-type="parent">Responsável</button>
-        <button type="button" class="btn btn-outline-primary" data-person-type="teacher">Professor</button>
-        <button type="button" class="btn btn-outline-primary" data-person-type="secretary">Secretaria</button>
+        <button type="button" class="btn btn-outline-success" data-person-type="student">Aluno</button>
+        <button type="button" class="btn btn-outline-success" data-person-type="parent">Responsável</button>
+        <button type="button" class="btn btn-outline-success" data-person-type="teacher">Professor</button>
+        <button type="button" class="btn btn-outline-success" data-person-type="secretary">Secretaria</button>
       </div>
-      <div id="personFormBody"></div>
+      <div id="personCreateBody"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="personEditModal">
+    <div class="modal-box">
+      <button class="modal-close" data-close="personEditModal">×</button>
+      <h4 class="mb-3">Editar Cadastro</h4>
+      <div id="personEditBody"></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="studentDetailModal">
+    <div class="modal-box">
+      <button class="modal-close" data-close="studentDetailModal">×</button>
+      <h4 class="mb-3">Dados do Aluno</h4>
+      <div id="studentDetailBody"></div>
     </div>
   </div>
 
@@ -196,11 +199,11 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="studentDetailModal">
+  <div class="modal-overlay" id="noticeResponsesModal">
     <div class="modal-box">
-      <button class="modal-close" data-close="studentDetailModal">×</button>
-      <h4 class="mb-3">Dados do Aluno</h4>
-      <div id="studentDetailBody"></div>
+      <button class="modal-close" data-close="noticeResponsesModal">×</button>
+      <h4 class="mb-3">Respostas do Comunicado</h4>
+      <div id="noticeResponsesBody"></div>
     </div>
   </div>
 
