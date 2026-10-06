@@ -1,6 +1,6 @@
 const CrecheNowNotifications = (() => {
   const { utils, NOTICE_TYPES, RESPONSE_TYPES, WEEKDAYS, WEEKDAYS_LONG, RELATIONSHIPS } = CrecheNowConfig;
-  const AVAILABLE_ICONS = ['🎵', '🤸', '📚', '', '👨👩‍‍👦', '🎭', '⚽', '🍎', '', '', '🎲', '🎂'];
+  const AVAILABLE_ICONS = ['🎵', '🤸', '📚', '🎭', '⚽', '🍎', '🎲', '🎂'];
 
   const openModal = (id) => document.getElementById(id)?.classList.add('active');
   const closeModal = (id) => document.getElementById(id)?.classList.remove('active');
