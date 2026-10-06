@@ -17,6 +17,7 @@
       <a class="navbar-brand fw-bold" href="#">CRECHENOW</a>
       <div class="d-flex align-items-center">
         <span class="text-white me-3 d-none d-sm-inline" id="userNameDisplay">Responsável</span>
+        <button class="btn btn-outline-light btn-sm me-1" id="openMyDataBtn" title="Meus Dados (LGPD)">LGPD</button>
         <button id="logoutBtn" class="btn btn-outline-light btn-sm">Sair</button>
       </div>
     </div>
@@ -24,28 +25,29 @@
 
   <main class="dashboard-main">
     <div class="dashboard-row">
-      
+
       <div class="side-column">
         <div class="card shadow-sm border-0">
           <div class="card-header bg-success text-white py-2">
-            <h5 class="mb-0 fs-6">📅 Agenda Semanal</h5>
+            <h5 class="mb-0 fs-6">Agenda Semanal</h5>
           </div>
           <div class="card-body" id="agenda-list"></div>
         </div>
       </div>
 
       <div class="center-column">
-        
-        <div class="card shadow-sm border-0" style="height: 200px; flex-shrink: 0;">
+
+        <div class="card shadow-sm border-0" style="flex: 1; min-height: 200px;">
           <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fs-6">📢 Comunicados</h5>
+            <h5 class="mb-0 fs-6">Comunicados</h5>
             <div class="btn-group btn-group-sm">
               <button type="button" class="btn btn-outline-primary active" data-filter="all">Todos</button>
-              <button type="button" class="btn btn-outline-primary" data-filter="saude">Saúde</button>
-              <button type="button" class="btn btn-outline-primary" data-filter="pedagogico">Pedagógico</button>
+              <button type="button" class="btn btn-outline-primary" data-filter="Evento">Evento</button>
+              <button type="button" class="btn btn-outline-primary" data-filter="Aviso">Aviso</button>
+              <button type="button" class="btn btn-outline-primary" data-filter="Bilhete">Bilhete</button>
             </div>
           </div>
-          <div class="notifications-carousel-wrapper" id="notifications-carousel" data-bs-ride="carousel" data-bs-interval="5000">
+          <div class="notifications-carousel-wrapper" id="notifications-carousel">
             <div class="carousel-inner" id="carousel-inner-notifs"></div>
             <div class="carousel-edge carousel-edge-left"></div>
             <div class="carousel-edge carousel-edge-right"></div>
@@ -60,8 +62,11 @@
 
         <div class="card shadow-sm border-0 routine-card-fixed" style="flex-shrink: 0;">
           <div class="card-header bg-success text-white py-2 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fs-6">👶 Rotina de Hoje</h5>
-            <button class="btn btn-sm btn-light text-success fw-bold" id="toggleRoutineHistory">Ver Histórico</button>
+            <h5 class="mb-0 fs-6">Rotina de Hoje</h5>
+            <div>
+              <select id="childSelect" class="form-select form-select-sm d-inline-block w-auto me-2" style="font-size: 0.8rem;"></select>
+              <button class="btn btn-sm btn-light text-success fw-bold" id="toggleRoutineHistory">Histórico</button>
+            </div>
           </div>
           <div class="card-body" id="routine-today">
             <p class="text-muted text-center mt-4">Carregando...</p>
@@ -71,11 +76,11 @@
 
         <div class="d-flex gap-2 justify-content-center" style="flex-shrink: 0;">
           <button class="btn btn-primary d-flex align-items-center gap-2" id="openMsgModalBtn">
-            <span>✉️</span> Enviar Recado
+            <span>+</span> Enviar Recado
           </button>
           <button class="btn btn-outline-secondary d-flex align-items-center gap-2 position-relative" id="openInboxModalBtn">
-            <span>📨</span> Mensagens
-            <span id="inboxBadge" style="display:none; position: absolute; top: -4px; right: -4px; background: #dc3545; color: white; font-size: 0.65rem; padding: 2px 6px; border-radius: 10px; font-weight: bold;">0</span>
+            <span>i</span> Mensagens
+            <span id="inboxBadge" class="inbox-badge">0</span>
           </button>
         </div>
 
@@ -84,7 +89,7 @@
       <div class="side-column">
         <div class="card shadow-sm border-0">
           <div class="card-header bg-success text-white py-2">
-            <h5 class="mb-0 fs-6">🍽️ Cardápio Semanal</h5>
+            <h5 class="mb-0 fs-6">Cardápio Semanal</h5>
           </div>
           <div class="card-body" id="cardapio-list"></div>
         </div>
@@ -93,29 +98,19 @@
     </div>
   </main>
 
-  <div class="modal-overlay" id="msgModal">
+  <div class="modal-overlay" id="messageFormModal">
     <div class="modal-box">
-      <button class="modal-close" data-close="msgModal">&times;</button>
-      <h4 class="mb-3">✉️ Enviar Recado para a Creche</h4>
-      <form id="parentMsgForm" class="needs-validation" novalidate>
-        <div class="mb-3">
-          <label class="form-label fw-bold">Nome da Criança</label>
-          <input type="text" class="form-control" id="childName" required>
-        </div>
-        <div class="mb-3">
-          <label class="form-label fw-bold">Mensagem</label>
-          <textarea class="form-control" id="parentMessage" rows="5" required placeholder="Escreva seu recado aqui..."></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Enviar Recado</button>
-      </form>
+      <button class="modal-close" data-close="messageFormModal">×</button>
+      <h4 class="mb-3">Enviar Recado</h4>
+      <div id="messageFormBody"></div>
     </div>
   </div>
 
   <div class="modal-overlay" id="inboxModal">
     <div class="modal-box">
-      <button class="modal-close" data-close="inboxModal">&times;</button>
-      <h4 class="mb-3">📨 Minhas Mensagens</h4>
-      <ul class="nav nav-tabs mb-3" id="inboxTabs">
+      <button class="modal-close" data-close="inboxModal">×</button>
+      <h4 class="mb-3">Minhas Mensagens</h4>
+      <ul class="nav nav-tabs mb-3">
         <li class="nav-item"><button class="nav-link active" data-inbox-tab="received">Recebidas</button></li>
         <li class="nav-item"><button class="nav-link" data-inbox-tab="sent">Enviadas</button></li>
       </ul>
@@ -127,9 +122,18 @@
     <div class="modal-box" id="routineModalContent"></div>
   </div>
 
+  <div class="modal-overlay" id="myDataModal">
+    <div class="modal-box">
+      <button class="modal-close" data-close="myDataModal">×</button>
+      <h4 class="mb-3">Meus Dados</h4>
+      <div id="myDataBody"></div>
+    </div>
+  </div>
+
   <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/js/core.js"></script>
   <script src="assets/js/storage.js"></script>
   <script src="assets/js/auth.js"></script>
   <script src="assets/js/notifications.js"></script>
