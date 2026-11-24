@@ -25,6 +25,16 @@
           <tbody id="sent-notifications"></tbody></table></div></div></div></div>
     <div class="center-column" data-mobile-label="Ações">
       <div class="card shadow-sm border-0 cal-preview-card" data-action="open-calendar"><div id="cal-preview"></div></div>
+      <div class="card shadow-sm border-0 notice-card-fixed">
+        <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center"><h5 class="mb-0 fs-6">Comunicados Enviados</h5>
+          <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-outline-primary active" data-filter="all">Todos</button>
+            <button type="button" class="btn btn-outline-primary" data-filter="Eventos">Eventos</button>
+            <button type="button" class="btn btn-outline-primary" data-filter="Avisos">Avisos</button>
+            <button type="button" class="btn btn-outline-primary" data-filter="Bilhetes">Bilhetes</button></div></div>
+        <div class="notifications-carousel-wrapper" id="staff-notifications-carousel"><div class="carousel-inner" id="staff-carousel-inner-notifs"></div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#staff-notifications-carousel" data-bs-slide="prev"><span class="cn-arrow">‹</span></button>
+          <button class="carousel-control-next" type="button" data-bs-target="#staff-notifications-carousel" data-bs-slide="next"><span class="cn-arrow">›</span></button></div></div>
       <div class="card shadow-sm border-0" style="flex:1;min-height:0">
         <div class="card-header hud-a py-2"><h5 class="mb-0 fs-6">Ações Rápidas</h5></div>
         <div class="card-body"><div class="d-grid gap-2 mb-3"><button class="btn btn-success w-100" data-action="open-notice">Novo Comunicado</button></div><hr>
@@ -32,8 +42,7 @@
           <div class="d-grid gap-2 mb-3"><button class="btn btn-warning w-100" data-action="open-cardapio-editor">Editar Cardápio</button>
             <button class="btn btn-outline-success w-100" data-action="open-school-calendar">Calendário de Aulas e Eventos</button></div><hr>
           <h6 class="small fw-bold">Cadastros</h6>
-          <div class="d-grid gap-2"><button class="btn btn-outline-success w-100" data-action="open-add-person">Cadastrar Pessoa</button>
-            <button class="btn btn-outline-success w-100" data-action="open-add-login">Novo Login</button></div></div></div>
+          <div class="d-grid gap-2"><button class="btn btn-outline-success w-100" data-action="open-add-person">Cadastrar Pessoa</button></div></div></div>
       <div class="d-flex gap-2 justify-content-center" style="flex-shrink:0">
         <button class="btn btn-primary" data-action="open-msg">Enviar Recado</button>
         <button class="btn btn-outline-primary position-relative" data-action="open-inbox">Mensagens <span id="inboxBadge" class="inbox-badge">0</span></button></div>
@@ -43,12 +52,12 @@
         <li class="nav-item"><button class="nav-link active" data-staff-tab="students">Alunos</button></li>
         <li class="nav-item"><button class="nav-link" data-staff-tab="parents">Responsáveis</button></li>
         <li class="nav-item"><button class="nav-link" data-staff-tab="teachers">Professores</button></li>
-        <li class="nav-item"><button class="nav-link" data-staff-tab="logins">Logins</button></li></ul>
+        <li class="nav-item"><button class="nav-link" data-staff-tab="permissions">Permissões</button></li></ul>
         <div class="card-body p-0"><div class="table-responsive h-100">
           <table class="table table-hover mb-0 align-middle staff-tab-panel" data-staff-panel="students"><thead class="table-light sticky-top"><tr><th>Nome</th><th>Turma</th></tr></thead><tbody id="students-list"></tbody></table>
           <table class="table table-hover mb-0 align-middle staff-tab-panel d-none" data-staff-panel="parents"><thead class="table-light sticky-top"><tr><th>Nome</th><th>Filhos</th></tr></thead><tbody id="parents-list"></tbody></table>
           <table class="table table-hover mb-0 align-middle staff-tab-panel d-none" data-staff-panel="teachers"><thead class="table-light sticky-top"><tr><th>Nome</th><th>Turma</th></tr></thead><tbody id="teachers-list"></tbody></table>
-          <table class="table table-hover mb-0 align-middle staff-tab-panel d-none" data-staff-panel="logins"><thead class="table-light sticky-top"><tr><th>Email</th><th>Papel</th><th>Pessoa</th><th></th></tr></thead><tbody id="logins-list"></tbody></table>
+          <table class="table table-hover mb-0 align-middle staff-tab-panel d-none" data-staff-panel="permissions"><thead class="table-light sticky-top"><tr><th>Configuração</th><th>Valor</th><th>Ação</th></tr></thead><tbody id="permissions-list"></tbody></table>
         </div></div></div></div>
   </div></main>
 
