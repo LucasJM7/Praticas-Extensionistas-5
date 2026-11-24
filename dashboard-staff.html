@@ -10,220 +10,72 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2a66b4">
 </head>
-<body class="bg-light">
-
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container-fluid px-4">
-      <a class="navbar-brand fw-bold" href="#">CRECHENOW</a>
-      <div class="d-flex align-items-center">
-        <span class="text-white me-3 d-none d-sm-inline">Secretaria</span>
-        <button id="logoutBtn" class="btn btn-outline-light btn-sm">Sair</button>
-      </div>
-    </div>
+<body class="bg-light" data-role="secretary">
+  <nav class="navbar navbar-expand-lg hud-b shadow-sm">
+    <div class="container-fluid px-4"><span class="navbar-brand fw-bold text-white">CRECHENOW</span>
+      <div class="d-flex align-items-center"><span class="text-white me-3 d-none d-sm-inline">Secretaria</span>
+        <button class="btn btn-outline-light btn-sm me-1" data-action="repeat-tutorial">Tutorial</button>
+        <button class="btn btn-outline-light btn-sm" data-action="logout">Sair</button></div></div>
   </nav>
-
-  <main class="dashboard-main">
-    <div class="dashboard-row">
-
-      <div class="side-column" data-mobile-label="Comunicados">
-        <div class="card shadow-sm border-0" style="flex: 1; min-height: 0;">
-          <div class="card-header bg-white py-2">
-            <h5 class="mb-0 fs-6">Histórico de Comunicados</h5>
-          </div>
-          <div class="card-body p-0">
-            <div class="table-responsive h-100">
-              <table class="table table-hover mb-0 align-middle">
-                <thead class="table-light sticky-top">
-                  <tr><th>Título</th><th>Tipo</th><th>Data</th><th>Respostas</th></tr>
-                </thead>
-                <tbody id="sent-notifications"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="center-column" data-mobile-label="Ações">
-        <div class="card shadow-sm border-0">
-          <div class="card-header bg-success text-white py-2">
-            <h5 class="mb-0 fs-6">Ações Rápidas</h5>
-          </div>
-          <div class="card-body">
-            <div class="d-grid gap-2 mb-3">
-              <button class="btn btn-success w-100" id="openNoticeBtn">Novo Comunicado</button>
-            </div>
-            <hr>
-            <h6 class="small fw-bold">Cardápio e Calendários</h6>
-            <div class="d-grid gap-2 mb-3">
-              <button class="btn btn-warning w-100" id="openCardapioEditorBtn">Editar Cardápio</button>
-              <button class="btn btn-outline-success w-100" id="openSchoolCalendarBtn">Calendário de Aulas</button>
-              <button class="btn btn-outline-secondary w-100" id="openCalendarBtn">Ver Calendário (Mês/Ano)</button>
-            </div>
-            <hr>
-            <h6 class="small fw-bold">Cadastros</h6>
-            <div class="d-grid gap-2">
-              <button class="btn btn-outline-success w-100" id="openAddPersonBtn">Cadastrar Pessoa</button>
-              <button class="btn btn-outline-success w-100" id="openAddLoginBtn">Novo Login</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="d-flex gap-2 justify-content-center" style="flex-shrink: 0;">
-          <button class="btn btn-primary" id="staffMsgBtn">Enviar Recado</button>
-          <button class="btn btn-outline-primary position-relative" id="staffInboxBtn">
-            Mensagens
-            <span id="inboxBadge" class="inbox-badge">0</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="side-column" data-mobile-label="Cadastros">
-        <div class="card shadow-sm border-0" style="flex: 1; min-height: 0;">
-          <ul class="nav nav-tabs mt-2 px-3 staff-tabs">
-            <li class="nav-item"><button class="nav-link active" data-staff-tab="students">Alunos</button></li>
-            <li class="nav-item"><button class="nav-link" data-staff-tab="parents">Responsáveis</button></li>
-            <li class="nav-item"><button class="nav-link" data-staff-tab="teachers">Professores</button></li>
-            <li class="nav-item"><button class="nav-link" data-staff-tab="logins">Logins</button></li>
-          </ul>
-          <div class="card-body p-0">
-            <div class="table-responsive h-100">
-              <table class="table table-hover mb-0 align-middle staff-tab-panel" data-staff-panel="students">
-                <thead class="table-light sticky-top"><tr><th>Nome</th><th>Turma</th></tr></thead>
-                <tbody id="students-list"></tbody>
-              </table>
-              <table class="table table-hover mb-0 align-middle staff-tab-panel d-none" data-staff-panel="parents">
-                <thead class="table-light sticky-top"><tr><th>Nome</th><th>Filhos</th></tr></thead>
-                <tbody id="parents-list"></tbody>
-              </table>
-              <table class="table table-hover mb-0 align-middle staff-tab-panel d-none" data-staff-panel="teachers">
-                <thead class="table-light sticky-top"><tr><th>Nome</th><th>Turma</th></tr></thead>
-                <tbody id="teachers-list"></tbody>
-              </table>
-              <table class="table table-hover mb-0 align-middle staff-tab-panel d-none" data-staff-panel="logins">
-                <thead class="table-light sticky-top"><tr><th>Email</th><th>Papel</th><th>Pessoa</th><th></th></tr></thead>
-                <tbody id="logins-list"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
+  <main class="dashboard-main"><div class="dashboard-row">
+    <div class="side-column" data-mobile-label="Comunicados">
+      <div class="card shadow-sm border-0"><div class="card-header bg-white py-2"><h5 class="mb-0 fs-6">Histórico de Comunicados</h5></div>
+        <div class="card-body p-0"><div class="table-responsive h-100"><table class="table table-hover mb-0 align-middle">
+          <thead class="table-light sticky-top"><tr><th>Título</th><th>Tipo</th><th>Data</th><th>Respostas</th></tr></thead>
+          <tbody id="sent-notifications"></tbody></table></div></div></div></div>
+    <div class="center-column" data-mobile-label="Ações">
+      <div class="card shadow-sm border-0 cal-preview-card" data-action="open-calendar"><div id="cal-preview"></div></div>
+      <div class="card shadow-sm border-0" style="flex:1;min-height:0">
+        <div class="card-header hud-a py-2"><h5 class="mb-0 fs-6">Ações Rápidas</h5></div>
+        <div class="card-body"><div class="d-grid gap-2 mb-3"><button class="btn btn-success w-100" data-action="open-notice">Novo Comunicado</button></div><hr>
+          <h6 class="small fw-bold">Cardápio e Calendários</h6>
+          <div class="d-grid gap-2 mb-3"><button class="btn btn-warning w-100" data-action="open-cardapio-editor">Editar Cardápio</button>
+            <button class="btn btn-outline-success w-100" data-action="open-school-calendar">Calendário de Aulas e Eventos</button></div><hr>
+          <h6 class="small fw-bold">Cadastros</h6>
+          <div class="d-grid gap-2"><button class="btn btn-outline-success w-100" data-action="open-add-person">Cadastrar Pessoa</button>
+            <button class="btn btn-outline-success w-100" data-action="open-add-login">Novo Login</button></div></div></div>
+      <div class="d-flex gap-2 justify-content-center" style="flex-shrink:0">
+        <button class="btn btn-primary" data-action="open-msg">Enviar Recado</button>
+        <button class="btn btn-outline-primary position-relative" data-action="open-inbox">Mensagens <span id="inboxBadge" class="inbox-badge">0</span></button></div>
     </div>
-  </main>
+    <div class="side-column" data-mobile-label="Cadastros">
+      <div class="card shadow-sm border-0"><ul class="nav nav-tabs mt-2 px-3 staff-tabs">
+        <li class="nav-item"><button class="nav-link active" data-staff-tab="students">Alunos</button></li>
+        <li class="nav-item"><button class="nav-link" data-staff-tab="parents">Responsáveis</button></li>
+        <li class="nav-item"><button class="nav-link" data-staff-tab="teachers">Professores</button></li>
+        <li class="nav-item"><button class="nav-link" data-staff-tab="logins">Logins</button></li></ul>
+        <div class="card-body p-0"><div class="table-responsive h-100">
+          <table class="table table-hover mb-0 align-middle staff-tab-panel" data-staff-panel="students"><thead class="table-light sticky-top"><tr><th>Nome</th><th>Turma</th></tr></thead><tbody id="students-list"></tbody></table>
+          <table class="table table-hover mb-0 align-middle staff-tab-panel d-none" data-staff-panel="parents"><thead class="table-light sticky-top"><tr><th>Nome</th><th>Filhos</th></tr></thead><tbody id="parents-list"></tbody></table>
+          <table class="table table-hover mb-0 align-middle staff-tab-panel d-none" data-staff-panel="teachers"><thead class="table-light sticky-top"><tr><th>Nome</th><th>Turma</th></tr></thead><tbody id="teachers-list"></tbody></table>
+          <table class="table table-hover mb-0 align-middle staff-tab-panel d-none" data-staff-panel="logins"><thead class="table-light sticky-top"><tr><th>Email</th><th>Papel</th><th>Pessoa</th><th></th></tr></thead><tbody id="logins-list"></tbody></table>
+        </div></div></div></div>
+  </div></main>
 
-  <div class="modal-overlay" id="noticeFormModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="noticeFormModal">×</button>
-      <h4 class="mb-3">Novo Comunicado</h4>
-      <div id="noticeFormBody"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="messageFormModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="messageFormModal">×</button>
-      <h4 class="mb-3">Enviar Recado</h4>
-      <div id="messageFormBody"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="inboxModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="inboxModal">×</button>
-      <h4 class="mb-3">Minhas Mensagens</h4>
-      <ul class="nav nav-tabs mb-3">
-        <li class="nav-item"><button class="nav-link active" data-inbox-tab="received">Recebidas</button></li>
-        <li class="nav-item"><button class="nav-link" data-inbox-tab="sent">Enviadas</button></li>
-      </ul>
-      <div id="inbox-content" style="max-height: 400px; overflow-y: auto;"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="threadModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="threadModal">×</button>
-      <h4 class="mb-3">Conversa</h4>
-      <div id="threadModalBody"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="cardapioEditorModal">
-    <div class="modal-box" style="max-width: 900px;">
-      <button class="modal-close" data-close="cardapioEditorModal">×</button>
-      <h4 class="mb-3">Editar Cardápio</h4>
-      <form id="cardapioEditorForm">
-        <div id="cardapioEditorContainer"></div>
-        <button type="submit" class="btn btn-success w-100 mt-2">Salvar</button>
-      </form>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="schoolCalendarModal">
-    <div class="modal-box" style="max-width: 900px;">
-      <button class="modal-close" data-close="schoolCalendarModal">×</button>
-      <h4 class="mb-3">Calendário de Aulas</h4>
-      <div id="schoolCalendarBody"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay calendar-modal" id="calendarModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="calendarModal">×</button>
-      <h4 class="mb-3">Calendário</h4>
-      <div class="btn-group btn-group-sm mb-3">
-        <button class="btn btn-outline-primary active" id="cal-mode-month">Mês</button>
-        <button class="btn btn-outline-primary" id="cal-mode-year">Ano</button>
-      </div>
-      <div class="d-flex justify-content-between align-items-center mb-2" id="calendarViewHeader"></div>
-      <div id="calendarViewBody" class="calendar-grid"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="personCreateModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="personCreateModal">×</button>
-      <h4 class="mb-3">Cadastrar Pessoa</h4>
-      <div class="btn-group btn-group-sm mb-3 w-100">
-        <button type="button" class="btn btn-outline-success" data-person-type="student">Aluno</button>
-        <button type="button" class="btn btn-outline-success" data-person-type="parent">Responsável</button>
-        <button type="button" class="btn btn-outline-success" data-person-type="teacher">Professor</button>
-        <button type="button" class="btn btn-outline-success" data-person-type="secretary">Secretaria</button>
-      </div>
-      <div id="personCreateBody"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="personEditModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="personEditModal">×</button>
-      <h4 class="mb-3">Editar Cadastro</h4>
-      <div id="personEditBody"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="studentDetailModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="studentDetailModal">×</button>
-      <h4 class="mb-3">Dados do Aluno</h4>
-      <div id="studentDetailBody"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="loginFormModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="loginFormModal">×</button>
-      <h4 class="mb-3">Criar Login</h4>
-      <div id="loginFormBody"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="noticeResponsesModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="noticeResponsesModal">×</button>
-      <h4 class="mb-3">Respostas do Comunicado</h4>
-      <div id="noticeResponsesBody"></div>
-    </div>
-  </div>
+  <div class="modal-overlay" id="noticeFormModal"><div class="modal-box"><button class="modal-close" data-close="noticeFormModal">×</button><h4 class="mb-3">Novo Comunicado</h4><div id="noticeFormBody"></div></div></div>
+  <div class="modal-overlay" id="cardapioEditorModal"><div class="modal-box" style="max-width:900px"><button class="modal-close" data-close="cardapioEditorModal">×</button><h4 class="mb-3">Editar Cardápio</h4>
+    <div id="cardapioEditorContainer"></div><button type="button" class="btn btn-success w-100 mt-2" data-action="save-cardapio">Salvar</button></div></div>
+  <div class="modal-overlay" id="schoolCalendarModal"><div class="modal-box" style="max-width:900px"><button class="modal-close" data-close="schoolCalendarModal">×</button><h4 class="mb-3">Calendário de Aulas e Eventos</h4><div id="schoolCalendarBody"></div></div></div>
+  <div class="modal-overlay calendar-modal" id="calendarModal"><div class="modal-box"><button class="modal-close" data-close="calendarModal">×</button><h4 class="mb-3">Calendário</h4>
+    <div class="d-flex justify-content-between align-items-center mb-2" id="calendarViewHeader"></div>
+    <div id="calendarViewBody" class="calendar-grid"></div></div></div>
+  <div class="modal-overlay" id="personCreateModal"><div class="modal-box"><button class="modal-close" data-close="personCreateModal">×</button><h4 class="mb-3">Cadastrar Pessoa</h4>
+    <div class="btn-group btn-group-sm mb-3 w-100">
+      <button type="button" class="btn btn-outline-success" data-person-type="student">Aluno</button>
+      <button type="button" class="btn btn-outline-success" data-person-type="parent">Responsável</button>
+      <button type="button" class="btn btn-outline-success" data-person-type="teacher">Professor</button>
+      <button type="button" class="btn btn-outline-success" data-person-type="secretary">Secretaria</button></div>
+    <div id="personCreateBody"></div></div></div>
+  <div class="modal-overlay" id="personEditModal"><div class="modal-box"><button class="modal-close" data-close="personEditModal">×</button><h4 class="mb-3">Editar Cadastro</h4><div id="personEditBody"></div></div></div>
+  <div class="modal-overlay" id="studentDetailModal"><div class="modal-box"><button class="modal-close" data-close="studentDetailModal">×</button><h4 class="mb-3">Dados do Aluno</h4><div id="studentDetailBody"></div></div></div>
+  <div class="modal-overlay" id="loginFormModal"><div class="modal-box"><button class="modal-close" data-close="loginFormModal">×</button><h4 class="mb-3">Criar Login</h4><div id="loginFormBody"></div></div></div>
+  <div class="modal-overlay" id="noticeResponsesModal"><div class="modal-box"><button class="modal-close" data-close="noticeResponsesModal">×</button><h4 class="mb-3">Respostas do Comunicado</h4><div id="noticeResponsesBody"></div></div></div>
+  <div class="modal-overlay" id="messageFormModal"><div class="modal-box"><button class="modal-close" data-close="messageFormModal">×</button><h4 class="mb-3">Enviar Recado</h4><div id="messageFormBody"></div></div></div>
+  <div class="modal-overlay" id="inboxModal"><div class="modal-box"><button class="modal-close" data-close="inboxModal">×</button><h4 class="mb-3">Minhas Mensagens</h4>
+    <ul class="nav nav-tabs mb-3"><li class="nav-item"><button class="nav-link active" data-inbox-tab="received">Recebidas</button></li><li class="nav-item"><button class="nav-link" data-inbox-tab="sent">Enviadas</button></li></ul>
+    <div id="inbox-content" style="max-height:400px;overflow-y:auto"></div></div></div>
+  <div class="modal-overlay" id="threadModal"><div class="modal-box"><button class="modal-close" data-close="threadModal">×</button><h4 class="mb-3">Conversa</h4><div id="threadModalBody"></div></div></div>
+  <div class="modal-overlay" id="tutorialModal"><div class="modal-box"><button class="modal-close" data-close="tutorialModal">×</button><div id="tutorialBody"></div></div></div>
 
   <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -232,15 +84,5 @@
   <script src="assets/js/auth.js"></script>
   <script src="assets/js/notifications.js"></script>
   <script src="assets/js/app.js"></script>
-  <script>
-    document.querySelectorAll('[data-staff-tab]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('[data-staff-tab]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.querySelectorAll('.staff-tab-panel').forEach(p => p.classList.add('d-none'));
-        document.querySelector(`.staff-tab-panel[data-staff-panel="${btn.dataset.staffTab}"]`).classList.remove('d-none');
-      });
-    });
-  </script>
 </body>
 </html>
