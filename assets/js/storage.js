@@ -3,7 +3,7 @@ const CrecheNowStorage = (() => {
   const QUEUE_KEY = 'crechenow_offline_queue';
   const hashSenha = s => { let h = 5381; for (let i = 0; i < s.length; i++) h = (h * 33) ^ s.charCodeAt(i); return (h >>> 0).toString(16); };
 
-  const DEFAULT_SCHOOL_CALENDAR = { schoolDays: [1, 2, 3, 4, 5], overrides: {}, access: 'year' };
+  const DEFAULT_SCHOOL_CALENDAR = { schoolDays: [1, 2, 3, 4, 5], overrides: {}, accessParent: 'year', accessTeacher: 'year' };
 
   const DEFAULT_PEOPLE = [
     { id: 'p_student_1', type: 'student', name: 'Joãozinho Silva', birthDate: '2022-03-15', class: 'A', allergies: 'Amendoim',
@@ -55,7 +55,6 @@ const CrecheNowStorage = (() => {
   ];
 
   const get = key => { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } };
-  // escrita única: grava + enfileira quando offline (processQueue aplica ao voltar)
   const set = (key, value) => {
     try {
       localStorage.setItem(key, JSON.stringify(value));
@@ -68,8 +67,16 @@ const CrecheNowStorage = (() => {
   const setSchoolCalendar = cal => set('crechenow_school_calendar', cal);
   const isSchoolDay = iso => { const c = getSchoolCalendar(); return (c.overrides && (iso in c.overrides)) ? c.overrides[iso] : c.schoolDays.includes(utils.getWeekdayIndex(iso)); };
   const setSchoolCalendarOverride = (iso, has) => { const c = getSchoolCalendar(); c.overrides = c.overrides || {}; c.overrides[iso] = has; setSchoolCalendar(c); };
-  const getCalendarAccess = () => getSchoolCalendar().access || 'year';
-  const setCalendarAccess = level => { const c = getSchoolCalendar(); c.access = level; setSchoolCalendar(c); };
+
+  const getCalendarAccess = role => {
+    const c = getSchoolCalendar();
+    return role === 'parent' ? (c.accessParent || 'year') : (c.accessTeacher || 'year');
+  };
+  const setCalendarAccess = (role, level) => {
+    const c = getSchoolCalendar();
+    if (role === 'parent') c.accessParent = level; else c.accessTeacher = level;
+    setSchoolCalendar(c);
+  };
 
   const getPeople = () => get('crechenow_people') || DEFAULT_PEOPLE;
   const setPeople = p => set('crechenow_people', p);
@@ -129,9 +136,9 @@ const CrecheNowStorage = (() => {
   const processQueue = () => {
     const q = get(QUEUE_KEY) || [];
     if (!q.length || !navigator.onLine) return;
-    q.forEach(a => localStorage.setItem(a.key, JSON.stringify(a.value))); // re-aplica (idempotente); engate p/ API futura aqui
+    q.forEach(a => localStorage.setItem(a.key, JSON.stringify(a.value)));
     set(QUEUE_KEY, []);
-    CrecheNowNotifications.showToast(`${q.length} ação(ões) offline sincronizadas.`);
+    if (window.CrecheNowNotifications) CrecheNowNotifications.showToast(`${q.length} ação(ões) offline sincronizadas.`);
   };
   window.addEventListener('online', processQueue);
 
