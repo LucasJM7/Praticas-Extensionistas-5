@@ -10,181 +10,81 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2a66b4">
 </head>
-<body class="bg-light">
-
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container-fluid px-4">
-      <a class="navbar-brand fw-bold" href="#">CRECHENOW</a>
-      <div class="d-flex align-items-center">
-        <span class="text-white me-3 d-none d-sm-inline" id="teacherInfo">Professor</span>
-        <button id="logoutBtn" class="btn btn-outline-light btn-sm">Sair</button>
-      </div>
-    </div>
+<body class="bg-light" data-role="teacher">
+  <nav class="navbar navbar-expand-lg hud-b shadow-sm">
+    <div class="container-fluid px-4"><span class="navbar-brand fw-bold text-white">CRECHENOW</span>
+      <div class="d-flex align-items-center"><span class="text-white me-3 d-none d-sm-inline" id="teacherInfo">Professor</span>
+        <button class="btn btn-outline-light btn-sm me-1" data-action="repeat-tutorial">Tutorial</button>
+        <button class="btn btn-outline-light btn-sm" data-action="logout">Sair</button></div></div>
   </nav>
-
-  <main class="dashboard-main">
-    <div class="dashboard-row">
-
-      <div class="side-column" data-mobile-label="Turma">
-        <div class="card shadow-sm border-0">
-          <div class="card-header bg-primary text-white py-2">
-            <h5 class="mb-0 fs-6">Minha Turma <span id="teacherClassDisplay" class="badge bg-success text-white"></span></h5>
-          </div>
-          <div class="card-body p-0">
-            <div class="table-responsive h-100">
-              <table class="table table-hover mb-0 align-middle">
-                <thead class="table-light sticky-top"><tr><th>Nome</th><th>Hoje</th></tr></thead>
-                <tbody id="teacher-students-list"></tbody>
-              </table>
-            </div>
-          </div>
-          <div class="card-footer bg-white small text-muted">Clique em um aluno para ver a ficha.</div>
-        </div>
+  <main class="dashboard-main"><div class="dashboard-row">
+    <div class="side-column" data-mobile-label="Turma">
+      <div class="card shadow-sm border-0"><div class="card-header hud-b py-2"><h5 class="mb-0 fs-6">Minha Turma <span id="teacherClassDisplay" class="badge bg-success text-white"></span></h5></div>
+        <div class="card-body p-0"><div class="table-responsive h-100"><table class="table table-hover mb-0 align-middle">
+          <thead class="table-light sticky-top"><tr><th>Nome</th><th>Hoje</th></tr></thead><tbody id="teacher-students-list"></tbody></table></div></div>
+        <div class="card-footer bg-white small text-muted">Clique em um aluno para ver a ficha.</div></div></div>
+    <div class="center-column" data-mobile-label="Registro">
+      <div class="card shadow-sm border-0 cal-preview-card" data-action="open-calendar"><div id="cal-preview"></div></div>
+      <div class="card shadow-sm border-0 notice-card-fixed">
+        <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center"><h5 class="mb-0 fs-6">Comunicados</h5>
+          <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-outline-primary active" data-filter="all">Todos</button>
+            <button type="button" class="btn btn-outline-primary" data-filter="Eventos">Eventos</button>
+            <button type="button" class="btn btn-outline-primary" data-filter="Avisos">Avisos</button>
+            <button type="button" class="btn btn-outline-primary" data-filter="Bilhetes">Bilhetes</button></div></div>
+        <div class="notifications-carousel-wrapper" id="notifications-carousel"><div class="carousel-inner" id="carousel-inner-notifs"></div></div></div>
+      <div class="btn-group mb-2" role="group">
+        <button class="btn btn-outline-success active" data-teacher-view="routine">Rotina</button>
+        <button class="btn btn-outline-success" data-teacher-view="agenda">Agenda</button>
+        <button class="btn btn-outline-success" data-teacher-view="cardapio">Cardápio</button></div>
+      <div id="teacherCenterContent">
+        <div class="card shadow-sm border-0 teacher-view" data-view="routine" style="display:flex">
+          <div class="card-header hud-a py-2"><h5 class="mb-0 fs-6">Registro de Rotina Diária</h5></div>
+          <div class="card-body"><form id="teacherRoutineForm" class="h-100 d-flex flex-column">
+            <div class="mb-3"><label class="form-label small fw-bold">Aluno</label><select class="form-select" id="routineStudentSelect" required><option value="">Escolha um aluno...</option></select></div>
+            <div class="mb-3"><label class="form-label small fw-bold d-block mb-1">Presença</label><select class="form-select" id="routineAttendance" required>
+              <option value="">— Selecione —</option><option value="present">Presente</option><option value="absent">Falta</option></select></div>
+            <div id="routineQuestionsContainer" class="mb-3 flex-grow-1 d-none"><label class="form-label small fw-bold">Avaliação do Dia</label>
+              <table class="table table-sm align-middle mb-0"><tbody>
+                <tr><td class="small">Se comportou bem?</td><td><input type="radio" name="q1" value="sim"> Sim <input type="radio" name="q1" value="nao" class="ms-2"> Não</td></tr>
+                <tr><td class="small">Prestou atenção?</td><td><input type="radio" name="q2" value="sim"> Sim <input type="radio" name="q2" value="nao" class="ms-2"> Não</td></tr>
+                <tr><td class="small">Fez os deveres?</td><td><input type="radio" name="q3" value="sim"> Sim <input type="radio" name="q3" value="nao" class="ms-2"> Não</td></tr>
+                <tr><td class="small">Se deu bem com colegas?</td><td><input type="radio" name="q4" value="sim"> Sim <input type="radio" name="q4" value="nao" class="ms-2"> Não</td></tr>
+                <tr><td class="small">Comeu toda a comida?</td><td><input type="radio" name="q5" value="sim"> Sim <input type="radio" name="q5" value="nao" class="ms-2"> Não</td></tr></tbody></table>
+              <div class="mt-3"><label class="form-label small fw-bold">Comentários (Opcional)</label><textarea class="form-control" id="routineComment" rows="2" placeholder="Detalhes sobre o dia..."></textarea></div></div>
+            <button type="submit" class="btn btn-success flex-fill">Salvar Rotina</button></form></div></div>
+        <div class="card shadow-sm border-0 teacher-view" data-view="agenda" style="display:none">
+          <div class="card-header hud-a py-2 d-flex justify-content-between align-items-center"><h5 class="mb-0 fs-6">Agenda Semanal da Turma</h5>
+            <button class="btn btn-sm btn-light fw-bold" data-action="open-agenda-editor">Editar Agenda</button></div>
+          <div class="card-body" id="agenda-list"></div></div>
+        <div class="card shadow-sm border-0 teacher-view" data-view="cardapio" style="display:none">
+          <div class="card-header hud-a py-2"><h5 class="mb-0 fs-6">Cardápio Semanal</h5></div>
+          <div class="card-body" id="cardapio-list"></div>
+          <div class="card-footer bg-white"><small class="fw-bold">Alergias na turma (atenção ao servir):</small><div id="teacher-allergy-list" class="small"></div></div></div>
       </div>
-
-      <div class="center-column" data-mobile-label="Registro">
-
-        <div class="btn-group mb-2" role="group">
-          <button class="btn btn-outline-success active" id="showTeacherRoutineBtn">Rotina</button>
-          <button class="btn btn-outline-success" id="showTeacherAgendaBtn">Agenda</button>
-          <button class="btn btn-outline-success" id="showTeacherCardapioBtn">Cardápio</button>
-        </div>
-
-        <div id="teacherCenterContent">
-          <div class="card shadow-sm border-0 teacher-view" data-view="routine" style="display: flex;">
-            <div class="card-header bg-success text-white py-2">
-              <h5 class="mb-0 fs-6">Registro de Rotina Diária</h5>
-            </div>
-            <div class="card-body">
-              <form id="teacherRoutineForm" class="needs-validation h-100 d-flex flex-column" novalidate>
-                <div class="mb-3">
-                  <label class="form-label small fw-bold">Aluno</label>
-                  <select class="form-select" id="routineStudentSelect" required><option value="">Escolha um aluno...</option></select>
-                </div>
-                <div class="mb-3">
-                  <label class="form-label small fw-bold d-block mb-1">Presença</label>
-                  <select class="form-select" id="routineAttendance" required>
-                    <option value="">— Selecione —</option>
-                    <option value="present">Presente</option>
-                    <option value="absent">Falta</option>
-                  </select>
-                </div>
-                <div id="routineQuestionsContainer" class="mb-3 flex-grow-1 d-none">
-                  <label class="form-label small fw-bold">Avaliação do Dia</label>
-                  <div class="table-responsive">
-                    <table class="table table-sm align-middle mb-0">
-                      <tbody>
-                        <tr><td class="small">Se comportou bem?</td><td><input type="radio" name="q1" value="sim"> Sim <input type="radio" name="q1" value="nao" class="ms-2"> Não</td></tr>
-                        <tr><td class="small">Prestou atenção?</td><td><input type="radio" name="q2" value="sim"> Sim <input type="radio" name="q2" value="nao" class="ms-2"> Não</td></tr>
-                        <tr><td class="small">Fez os deveres?</td><td><input type="radio" name="q3" value="sim"> Sim <input type="radio" name="q3" value="nao" class="ms-2"> Não</td></tr>
-                        <tr><td class="small">Se deu bem com colegas?</td><td><input type="radio" name="q4" value="sim"> Sim <input type="radio" name="q4" value="nao" class="ms-2"> Não</td></tr>
-                        <tr><td class="small">Comeu toda a comida?</td><td><input type="radio" name="q5" value="sim"> Sim <input type="radio" name="q5" value="nao" class="ms-2"> Não</td></tr>
-                      </tbody>
-                    </table>
-                  </div>
-                  <div class="mt-3">
-                    <label class="form-label small fw-bold">Comentários (Opcional)</label>
-                    <textarea class="form-control" id="routineComment" rows="2" placeholder="Detalhes sobre o dia..."></textarea>
-                  </div>
-                </div>
-                <div class="d-flex gap-2">
-                  <button type="submit" class="btn btn-success flex-fill">Salvar Rotina</button>
-                </div>
-              </form>
-            </div>
-          </div>
-
-          <div class="card shadow-sm border-0 teacher-view" data-view="agenda" style="display: none;">
-            <div class="card-header bg-success text-white py-2 d-flex justify-content-between align-items-center">
-              <h5 class="mb-0 fs-6">Agenda Semanal da Turma</h5>
-              <button class="btn btn-sm btn-light text-success fw-bold" id="openAgendaEditorBtn">Editar Agenda</button>
-            </div>
-            <div class="card-body" id="agenda-list"></div>
-          </div>
-
-          <div class="card shadow-sm border-0 teacher-view" data-view="cardapio" style="display: none;">
-            <div class="card-header bg-success text-white py-2">
-              <h5 class="mb-0 fs-6">Cardápio Semanal</h5>
-            </div>
-            <div class="card-body" id="cardapio-list"></div>
-            <div class="card-footer bg-white">
-              <small class="fw-bold">Alergias na turma (atenção ao servir):</small>
-              <div id="teacher-allergy-list" class="small"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="d-flex gap-2 justify-content-center" style="flex-shrink: 0;">
-          <button class="btn btn-primary" id="openTeacherMsgModalBtn">Enviar Recado</button>
-          <button class="btn btn-outline-primary position-relative" id="openTeacherInboxModalBtn">
-            Mensagens
-            <span id="inboxBadge" class="inbox-badge">0</span>
-          </button>
-        </div>
-
-      </div>
-
-      <div class="side-column" data-mobile-label="Histórico">
-        <div class="card shadow-sm border-0">
-          <div class="card-header bg-primary text-white py-2">
-            <h5 class="mb-0 fs-6">Últimos Registros</h5>
-          </div>
-          <div class="card-body p-0">
-            <div id="teacher-routine-history" class="h-100" style="overflow-y: auto;"></div>
-          </div>
-        </div>
-      </div>
-
+      <div class="d-flex gap-2 justify-content-center" style="flex-shrink:0">
+        <button class="btn btn-primary" data-action="open-msg">Enviar Recado</button>
+        <button class="btn btn-outline-primary position-relative" data-action="open-inbox">Mensagens <span id="inboxBadge" class="inbox-badge">0</span></button></div>
     </div>
-  </main>
+    <div class="side-column" data-mobile-label="Histórico">
+      <div class="card shadow-sm border-0"><div class="card-header hud-b py-2"><h5 class="mb-0 fs-6">Últimos Registros</h5></div>
+        <div class="card-body p-0"><div id="teacher-routine-history" class="h-100" style="overflow-y:auto"></div></div></div></div>
+  </div></main>
 
-  <div class="modal-overlay" id="agendaEditorModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="agendaEditorModal">×</button>
-      <h4 class="mb-3">Editar Agenda da Turma</h4>
-      <p class="small text-muted">Edite a semana atual ou navegue para as próximas. Dias sem aula ficam bloqueados.</p>
-      <form id="agendaEditorForm">
-        <div id="agendaEditorContainer"></div>
-        <button type="submit" class="btn btn-success w-100">Salvar Agenda da Semana</button>
-      </form>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="studentViewModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="studentViewModal">×</button>
-      <h4 class="mb-3">Ficha do Aluno</h4>
-      <div id="studentViewBody"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="messageFormModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="messageFormModal">×</button>
-      <h4 class="mb-3">Enviar Recado</h4>
-      <div id="messageFormBody"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="inboxModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="inboxModal">×</button>
-      <h4 class="mb-3">Mensagens</h4>
-      <ul class="nav nav-tabs mb-3">
-        <li class="nav-item"><button class="nav-link active" data-inbox-tab="received">Recebidas</button></li>
-        <li class="nav-item"><button class="nav-link" data-inbox-tab="sent">Enviadas</button></li>
-      </ul>
-      <div id="inbox-content" style="max-height: 400px; overflow-y: auto;"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="threadModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="threadModal">×</button>
-      <h4 class="mb-3">Conversa</h4>
-      <div id="threadModalBody"></div>
-    </div>
-  </div>
+  <div class="modal-overlay" id="agendaEditorModal"><div class="modal-box"><button class="modal-close" data-close="agendaEditorModal">×</button><h4 class="mb-3">Editar Agenda da Turma</h4>
+    <p class="small text-muted">Edite a semana atual ou navegue para as próximas. Dias sem aula ficam bloqueados.</p>
+    <div id="agendaEditorContainer"></div>
+    <button type="button" class="btn btn-success w-100" data-action="save-agenda">Salvar Agenda da Semana</button></div></div>
+  <div class="modal-overlay" id="studentViewModal"><div class="modal-box"><button class="modal-close" data-close="studentViewModal">×</button><h4 class="mb-3">Ficha do Aluno</h4><div id="studentViewBody"></div></div></div>
+  <div class="modal-overlay" id="messageFormModal"><div class="modal-box"><button class="modal-close" data-close="messageFormModal">×</button><h4 class="mb-3">Enviar Recado</h4><div id="messageFormBody"></div></div></div>
+  <div class="modal-overlay" id="inboxModal"><div class="modal-box"><button class="modal-close" data-close="inboxModal">×</button><h4 class="mb-3">Mensagens</h4>
+    <ul class="nav nav-tabs mb-3"><li class="nav-item"><button class="nav-link active" data-inbox-tab="received">Recebidas</button></li><li class="nav-item"><button class="nav-link" data-inbox-tab="sent">Enviadas</button></li></ul>
+    <div id="inbox-content" style="max-height:400px;overflow-y:auto"></div></div></div>
+  <div class="modal-overlay" id="threadModal"><div class="modal-box"><button class="modal-close" data-close="threadModal">×</button><h4 class="mb-3">Conversa</h4><div id="threadModalBody"></div></div></div>
+  <div class="modal-overlay calendar-modal" id="calendarModal"><div class="modal-box"><button class="modal-close" data-close="calendarModal">×</button><h4 class="mb-3">Calendário</h4>
+    <div class="d-flex justify-content-between align-items-center mb-2" id="calendarViewHeader"></div>
+    <div id="calendarViewBody" class="calendar-grid"></div></div></div>
+  <div class="modal-overlay" id="tutorialModal"><div class="modal-box"><button class="modal-close" data-close="tutorialModal">×</button><div id="tutorialBody"></div></div></div>
 
   <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -193,16 +93,5 @@
   <script src="assets/js/auth.js"></script>
   <script src="assets/js/notifications.js"></script>
   <script src="assets/js/app.js"></script>
-  <script>
-    document.addEventListener('click', (e) => {
-      const btn = e.target.closest('#showTeacherRoutineBtn, #showTeacherAgendaBtn, #showTeacherCardapioBtn');
-      if (!btn) return;
-      document.querySelectorAll('.teacher-view').forEach(v => v.style.display = 'none');
-      document.querySelectorAll('#showTeacherRoutineBtn, #showTeacherAgendaBtn, #showTeacherCardapioBtn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const view = btn.id === 'showTeacherRoutineBtn' ? 'routine' : btn.id === 'showTeacherAgendaBtn' ? 'agenda' : 'cardapio';
-      document.querySelector(`.teacher-view[data-view="${view}"]`).style.display = 'flex';
-    });
-  </script>
 </body>
 </html>
