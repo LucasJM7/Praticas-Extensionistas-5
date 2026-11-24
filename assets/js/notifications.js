@@ -30,25 +30,27 @@ const CrecheNowNotifications = (() => {
       <button class="btn btn-sm btn-success mt-1" data-action="respond-text" data-notice="${n.id}">Enviar resposta</button></div>`;
   };
 
-  const renderFeed = (filter = 'all') => {
-    const c = el('carousel-inner-notifs'); if (!c) return;
+  const renderFeed = (filter = 'all', containerId = 'carousel-inner-notifs') => {
+    const c = el(containerId); if (!c) return;
     const s = session(); const cls = myClasses();
     let all = store.getNotifications();
     if (cls) all = all.filter(n => !n.targetClass || n.targetClass === 'all' || cls.includes(n.targetClass));
     const list = all.filter(n => filter === 'all' || n.type === filter);
+    const isSecretary = s?.role === 'secretary';
     c.innerHTML = list.length ? list.map((n, i) => `
       <div class="carousel-item ${i === 0 ? 'active' : ''}">
-        <div class="notify-card ${isUnread(n) ? 'unread' : ''}" data-type="${esc(n.type)}">
+        <div class="notify-card ${!isSecretary && isUnread(n) ? 'unread' : ''}" data-type="${esc(n.type)}">
           <div class="d-flex justify-content-between align-items-start mb-1"><h5 class="fw-bold mb-0">${esc(n.title)}</h5>
-          <span class="badge ${isUnread(n) ? 'bg-warning text-dark' : 'bg-secondary'}">${isUnread(n) ? 'Novo' : 'Lido'}</span></div>
-          <p class="text-muted mb-1 notify-body">${esc(n.body)}</p>${responseZoneHTML(n, s)}
+          <span class="badge ${!isSecretary && isUnread(n) ? 'bg-warning text-dark' : 'bg-secondary'}">${!isSecretary && isUnread(n) ? 'Novo' : (isSecretary ? 'Enviado' : 'Lido')}</span></div>
+          <p class="text-muted mb-1 notify-body">${esc(n.body)}</p>${!isSecretary ? responseZoneHTML(n, s) : ''}
           <div class="d-flex justify-content-between align-items-center mt-auto gap-2"><small class="text-muted">${utils.formatDateTimeBR(n.date)}</small>
-          ${isUnread(n) ? `<button class="btn btn-sm btn-outline-primary" data-action="mark-read" data-item-id="${n.id}">Marcar como lido</button>` : ''}</div>
+          ${!isSecretary && isUnread(n) ? `<button class="btn btn-sm btn-outline-primary" data-action="mark-read" data-item-id="${n.id}">Marcar como lido</button>` : ''}
+          ${isSecretary ? `<span class="badge ${store.getResponsesForNotice(n.id).length ? 'bg-success' : 'bg-secondary'}">${store.getResponsesForNotice(n.id).length} resposta(s)</span>` : ''}</div>
         </div></div>`).join('')
       : '<div class="carousel-item active"><div class="notify-card"><div class="text-center text-muted">Nenhum comunicado encontrado.</div></div></div>';
-    refreshCarousel();
+    refreshCarousel(containerId.replace('inner-', ''));
   };
-  const refreshCarousel = () => { const n = el('notifications-carousel'); if (!n || !window.bootstrap?.Carousel) return; bootstrap.Carousel.getInstance(n)?.dispose(); new bootstrap.Carousel(n, { interval: 6000, ride: 'carousel' }); };
+  const refreshCarousel = (id = 'notifications-carousel') => { const n = el(id); if (!n || !window.bootstrap?.Carousel) return; bootstrap.Carousel.getInstance(n)?.dispose(); new bootstrap.Carousel(n, { interval: 6000, ride: 'carousel' }); };
 
   const renderCalendarPreview = (id = 'cal-preview') => {
     const c = el(id); if (!c) return;
@@ -58,13 +60,17 @@ const CrecheNowNotifications = (() => {
     c.innerHTML = `<div class="card-header hud-a py-2 d-flex justify-content-between align-items-center">
         <h5 class="mb-0 fs-6">Calendário</h5><small class="text-white-50">clique para expandir</small></div>
       <div class="card-body py-2"><div class="cal-chips">${week.map(d => {
-        const on = store.isSchoolDay(d); const ag = agenda.find(a => a.date === d); const ev = events.find(e => e.date === d);
+        const on = store.isSchoolDay(d); const ag = on ? agenda.find(a => a.date === d) : null; const ev = events.find(e => e.date === d);
         return `<div class="cal-chip ${on ? '' : 'off'}"><div class="chip-day">${WEEKDAYS[utils.getWeekdayIndex(d)]} ${+d.slice(8)}</div>
-          <div class="chip-icon">${on ? (ag ? esc(ag.icon || '📌') : '·') : '🚫'}</div>${ev ? '<span class="chip-dot" title="Evento"></span>' : ''}</div>`;
+          <div class="chip-icon">${on ? (ag ? esc(ag.icon || '📌') : '·') : (ev ? '📣' : '🚫')}</div>${ev ? '<span class="chip-dot" title="Evento"></span>' : ''}</div>`;
       }).join('')}</div></div>`;
   };
 
-  const maxMode = () => { const s = session(); return (s?.role === 'secretary') ? 'year' : store.getCalendarAccess(); };
+  const maxMode = () => {
+    const s = session();
+    if (s?.role === 'secretary') return 'year';
+    return store.getCalendarAccess(s?.role || 'parent');
+  };
 
   const navBar = (prefix, view, ref, allowed) => `
     <div class="d-flex justify-content-between align-items-center mb-2">
@@ -80,9 +86,16 @@ const CrecheNowNotifications = (() => {
     const ref = utils.parseISO(modal.dataset.ref || utils.todayISO());
     const act = btn.dataset.action;
     if (act === `${prefix}-view`) { modal.dataset.view = btn.dataset.view; modal.dataset.ref = utils.toISODate(ref); }
-    else { const dir = act.endsWith('next') ? 1 : -1;
-      if (view === 'week') ref.setDate(ref.getDate() + 7 * dir); else if (view === 'month') ref.setMonth(ref.getMonth() + dir); else ref.setFullYear(ref.getFullYear() + dir);
-      modal.dataset.ref = utils.toISODate(ref); }
+    else {
+      const dir = act.endsWith('next') ? 1 : -1;
+      const maxLevel = maxMode();
+      const levelIdx = { week: 0, month: 1, year: 2 };
+      if (levelIdx[view] >= levelIdx[maxLevel]) return true;
+      if (view === 'week') ref.setDate(ref.getDate() + 7 * dir);
+      else if (view === 'month') ref.setMonth(ref.getMonth() + dir);
+      else ref.setFullYear(ref.getFullYear() + dir);
+      modal.dataset.ref = utils.toISODate(ref);
+    }
     rerender(); return true;
   };
 
@@ -97,10 +110,13 @@ const CrecheNowNotifications = (() => {
       : (mode === 'month' ? utils.getMonthDates(ref.getFullYear(), ref.getMonth()) : utils.getWeekDates(utils.mondayOf(ref)));
     body.innerHTML = dates.map(d => {
       const dt = utils.parseISO(d), on = store.isSchoolDay(d);
-      const ag = agenda.filter(a => a.date === d), ca = store.getCardapio().filter(c => c.date === d && c.meal), ev = events.filter(x => x.date === d);
-      return `<div class="calendar-cell ${!on ? 'no-school' : (ag.length || ca.length || ev.length ? 'has-content' : '')}">
+      const ag = on ? agenda.filter(a => a.date === d) : [];
+      const ca = on ? store.getCardapio().filter(c => c.date === d && c.meal) : [];
+      const ev = events.filter(x => x.date === d);
+      const hasContent = ag.length || ca.length || ev.length;
+      return `<div class="calendar-cell ${!on && !ev.length ? 'no-school' : (hasContent ? 'has-content' : '')}">
         <div class="cell-header"><small class="text-muted">${WEEKDAYS[dt.getDay()]}</small><strong>${dt.getDate()}/${String(dt.getMonth() + 1).padStart(2, '0')}</strong></div>
-        ${!on ? '<div class="cell-item no-school">Sem aula</div>' : ''}
+        ${!on && !ev.length ? '<div class="cell-item no-school">Sem aula</div>' : ''}
         ${ag.map(a => `<div class="cell-item agenda">${esc(a.icon || '')} ${esc(a.time)} ${esc(a.title)}${a.class ? ` <em>(${esc(a.class)})</em>` : ''}</div>`).join('')}
         ${ca.map(c => `<div class="cell-item cardapio">${esc(c.meal)}</div>`).join('')}
         ${ev.map(x => `<div class="cell-item event">📣 ${esc(x.title)}</div>`).join('')}</div>`;
@@ -217,9 +233,9 @@ const CrecheNowNotifications = (() => {
       `</div><small class="text-muted d-block mt-1">Clique nas datas para criar exceções (feriados, recessos, reposições).</small></div>
       <div class="mb-2 d-flex align-items-center gap-2"><small class="fw-bold">Pais e professores podem ver até:</small>
         <select class="form-select form-select-sm w-auto" data-action="set-access">
-          <option value="week" ${cal.access === 'week' ? 'selected' : ''}>Semana</option>
-          <option value="month" ${cal.access === 'month' ? 'selected' : ''}>Mês</option>
-          <option value="year" ${cal.access === 'year' ? 'selected' : ''}>Ano</option>
+          <option value="week" ${cal.accessParent === 'week' ? 'selected' : ''}>Semana</option>
+          <option value="month" ${cal.accessParent === 'month' ? 'selected' : ''}>Mês</option>
+          <option value="year" ${cal.accessParent === 'year' ? 'selected' : ''}>Ano</option>
         </select></div>` + navBar('sc', view, ref, MODES);
     if (view === 'week') {
       html += utils.getWeekDates(utils.mondayOf(ref)).map(d => {
@@ -260,8 +276,8 @@ const CrecheNowNotifications = (() => {
     if (!r.attendance) { today.innerHTML = '<div class="absent-message"><div><div style="font-size:2.5rem">😷</div><div class="mt-2">A criança não foi hoje</div></div></div>'; if (hist) hist.innerHTML = ''; return; }
     const q = r.questions || {}, ic = v => v === 'sim' ? '<span class="text-success fw-bold">Sim</span>' : '<span class="text-danger fw-bold">Não</span>';
     today.innerHTML = `<div class="routine-grid">
-      <div class="routine-item">Comportamento: ${ic(q.behaved)}</div><div class="routine-item">Atenção: ${ic(q.attention)}</div>
-      <div class="routine-item">Deveres: ${ic(q.homework)}</div><div class="routine-item">Colegas: ${ic(q.peers)}</div>
+      <div class="routine-item">Atenção: ${ic(q.attention)}</div><div class="routine-item">Deveres: ${ic(q.homework)}</div>
+      <div class="routine-item">Colegas: ${ic(q.peers)}</div>
       <div class="routine-item" style="grid-column:1/-1">Alimentação: ${ic(q.food)}</div></div>
       ${r.comment ? '<div class="click-hint">Clique para ver detalhes</div>' : ''}`;
     today.onclick = () => openRoutineModal(r, ic);
@@ -270,11 +286,12 @@ const CrecheNowNotifications = (() => {
       hist.innerHTML = h.length ? '<h6 class="small fw-bold mb-2">Dias Anteriores:</h6>' + h.map(x => `<div class="border-bottom pb-2 mb-2 small"><div class="fw-bold text-muted">${utils.formatDateBR(x.date)} ${x.attendance === false ? '<span class="text-danger">(Faltou)</span>' : ''}</div><div>${esc(x.comment || 'Sem comentários.')}</div></div>`).join('') : '<p class="text-muted small mb-0">Sem histórico anterior.</p>';
     }
   };
+
   const openRoutineModal = (r, ic) => {
     const q = r.questions || {};
     el('routineModalContent').innerHTML = `<button class="modal-close" data-close="routineModal">×</button>
       <h4 class="mb-3">Rotina Completa de Hoje</h4>
-      <div class="routine-grid mb-3"><div class="routine-item">Comportamento: ${ic(q.behaved)}</div><div class="routine-item">Atenção: ${ic(q.attention)}</div>
+      <div class="routine-grid mb-3"><div class="routine-item">Atenção: ${ic(q.attention)}</div>
       <div class="routine-item">Deveres: ${ic(q.homework)}</div><div class="routine-item">Colegas: ${ic(q.peers)}</div>
       <div class="routine-item" style="grid-column:1/-1">Alimentação: ${ic(q.food)}</div></div>
       ${r.comment ? `<div class="routine-comment"><strong>Comentário do professor:</strong><br>"${esc(r.comment)}"</div>` : '<p class="text-muted fst-italic">Sem comentários adicionais.</p>'}
@@ -323,7 +340,7 @@ const CrecheNowNotifications = (() => {
     w.document.write(`<html><head><title>CrecheNow — ${esc(kid.name)}</title><style>body{font-family:Arial,sans-serif;max-width:600px;margin:2rem auto}h1{font-size:1.2rem}table{width:100%;border-collapse:collapse}td,th{border:1px solid #999;padding:6px;font-size:.9rem}.lbl{background:#eee}</style></head><body>
       <h1>CrecheNow — Resumo do dia</h1><p><strong>Aluno:</strong> ${esc(kid.name)} (Turma ${esc(kid.class)})<br><strong>Data:</strong> ${utils.formatDateBR(iso)}</p>
       <table><tr><td class="lbl">Presença</td><td>${r ? (r.attendance ? 'Presente' : 'Faltou') : 'Não registrado'}</td></tr>
-      ${r && r.questions ? `<tr><td class="lbl">Comportamento</td><td>${ic(r.questions.behaved)}</td></tr><tr><td class="lbl">Atenção</td><td>${ic(r.questions.attention)}</td></tr>
+      ${r && r.questions ? `<tr><td class="lbl">Atenção</td><td>${ic(r.questions.attention)}</td></tr>
       <tr><td class="lbl">Deveres</td><td>${ic(r.questions.homework)}</td></tr><tr><td class="lbl">Colegas</td><td>${ic(r.questions.peers)}</td></tr>
       <tr><td class="lbl">Alimentação</td><td>${ic(r.questions.food)}</td></tr>` : ''}
       ${r && r.comment ? `<tr><td class="lbl">Comentário</td><td>${esc(r.comment)}</td></tr>` : ''}
@@ -373,6 +390,24 @@ const CrecheNowNotifications = (() => {
     t.innerHTML = l.length ? l.map(x => `<tr data-action="open-person" data-id="${x.id}" style="cursor:pointer"><td class="small">${esc(x.name)}</td><td><span class="badge bg-warning text-dark">Turma ${esc(x.class)}</span></td></tr>`).join('') : '<tr><td colspan="2" class="text-center text-muted py-3 small">Nenhum professor.</td></tr>'; };
   const renderParentsList = () => { const t = el('parents-list'); if (!t) return; const l = store.getParents();
     t.innerHTML = l.length ? l.map(p => `<tr data-action="open-person" data-id="${p.id}" style="cursor:pointer"><td class="small">${esc(p.name)}</td><td class="small">${esc((p.linkedStudentIds || []).map(id => store.getPerson(id)?.name).filter(Boolean).join(', ') || '—')}</td></tr>`).join('') : '<tr><td colspan="2" class="text-center text-muted py-3 small">Nenhum responsável.</td></tr>'; };
+
+  const renderPermissionsList = () => {
+    const t = el('permissions-list'); if (!t) return;
+    const cal = store.getSchoolCalendar();
+    t.innerHTML = `
+      <tr><td class="small fw-bold" colspan="3">📅 Permissões do Calendário</td></tr>
+      <tr><td class="small">Calendário - Pais podem ver até</td><td><span class="badge bg-info">${MODE_LABEL[cal.accessParent || 'year']}</span></td>
+        <td><button class="btn btn-sm btn-outline-primary" data-action="edit-access" data-role="parent">Alterar</button></td></tr>
+      <tr><td class="small">Calendário - Professores podem ver até</td><td><span class="badge bg-info">${MODE_LABEL[cal.accessTeacher || 'year']}</span></td>
+        <td><button class="btn btn-sm btn-outline-primary" data-action="edit-access" data-role="teacher">Alterar</button></td></tr>
+      <tr><td colspan="3"><hr class="my-2"><h6 class="small fw-bold mb-2">🔑 Logins do Sistema</h6></td></tr>
+      ${store.getLogins().map(l => { const p = store.getPerson(l.personId);
+        return `<tr><td class="small">${esc(l.email)}</td><td><span class="badge bg-secondary">${esc(l.role)}${l.isJunior ? ' (júnior)' : ''}</span></td>
+          <td><button class="btn btn-sm btn-outline-danger" data-action="delete-login" data-id="${l.personId}">×</button></td></tr>`;
+      }).join('') || '<tr><td colspan="3" class="text-center text-muted py-2">Nenhum login.</td></tr>'}
+      <tr><td colspan="3"><button class="btn btn-success w-100 mt-2" data-action="open-add-login">+ Novo Login</button></td></tr>`;
+  };
+
   const renderLoginsList = () => { const t = el('logins-list'); if (!t) return;
     t.innerHTML = store.getLogins().map(l => { const p = store.getPerson(l.personId);
       return `<tr><td class="small">${esc(l.email)}</td><td><span class="badge bg-secondary">${esc(l.role)}${l.isJunior ? ' (júnior)' : ''}</span></td><td class="small">${p ? esc(p.name) : '(removido)'}</td><td><button class="btn btn-sm btn-outline-danger" data-action="delete-login" data-id="${l.personId}">×</button></td></tr>`; }).join('') || '<tr><td colspan="4" class="text-center text-muted py-3">Nenhum login.</td></tr>'; };
@@ -514,13 +549,19 @@ const CrecheNowNotifications = (() => {
     const done = store.get('crechenow_tutorial_done') || {};
     if (!done[s.personId]) { window.__tutStep = 0; renderTutorial(0); }
   };
+
   const renderTutorial = step => {
     const s = session(); if (!s) return; const steps = TUTORIALS[s.role] || [];
     el('tutorialBody').innerHTML = `<h4 class="mb-3">Guia rápido — ${s.role === 'parent' ? 'Responsável' : s.role === 'teacher' ? 'Professor' : 'Secretaria'}</h4>
       <div class="tutorial-steps">${steps.map((_, i) => `<span class="${i <= step ? 'on' : ''}"></span>`).join('')}</div>
       <p class="mb-4">${esc(steps[step] || '')}</p>
-      <div class="d-flex justify-content-between"><button class="btn btn-sm btn-outline-secondary" data-action="tutorial-skip">Pular</button>
-      <button class="btn btn-sm btn-success" data-action="tutorial-next">${step < steps.length - 1 ? 'Próximo' : 'Concluir'}</button></div>`;
+      <div class="d-flex justify-content-between">
+        <button class="btn btn-sm btn-outline-secondary" data-action="tutorial-skip">Pular</button>
+        <div class="d-flex gap-2">
+          ${step > 0 ? `<button class="btn btn-sm btn-outline-primary" data-action="tutorial-prev">Anterior</button>` : ''}
+          <button class="btn btn-sm btn-success" data-action="tutorial-next">${step < steps.length - 1 ? 'Próximo' : 'Concluir'}</button>
+        </div>
+      </div>`;
     openModal('tutorialModal');
   };
 
@@ -579,7 +620,7 @@ const CrecheNowNotifications = (() => {
     'send-notice': () => { const title = el('nf-title').value.trim(), body = el('nf-body').value.trim();
       if (!title || !body) return showToast('Preencha título e mensagem.', 'warning');
       store.addNotification({ title, body, type: el('nf-type').value, targetClass: el('nf-target').value, responseType: el('nf-response').value, date: `${el('nf-date').value}T${el('nf-time').value}:00` });
-      showToast('Comunicado enviado.'); renderSent(); closeModal('noticeFormModal'); },
+      showToast('Comunicado enviado.'); renderSent(); renderFeed('all', 'staff-carousel-inner-notifs'); closeModal('noticeFormModal'); },
     'open-responses': t => openResponsesModal(t.dataset.id),
     'open-add-person': () => { renderPersonCreateForm('student'); openModal('personCreateModal'); },
     'create-person': () => { const type = el('pc-type').value, name = el('pc-name').value.trim(); if (!name) return showToast('Informe o nome.', 'warning');
@@ -590,7 +631,7 @@ const CrecheNowNotifications = (() => {
       else if (type === 'parent') { base.linkedStudentIds = []; created = store.addPerson(base);
         const cid = el('pc-child-id').value; if (cid) { store.updatePerson(created.id, { linkedStudentIds: [cid] }); const s = store.getPerson(cid); store.updatePerson(cid, { parentIds: [...(s.parentIds || []), created.id] }); } }
       else { if (type === 'teacher') base.class = el('pc-class').value; if (type === 'secretary') base.isJunior = el('pc-junior').checked; created = store.addPerson(base); }
-      showToast('Cadastro realizado. Crie um login para esta pessoa.'); closeModal('personCreateModal'); renderStudentManagement(); renderTeachersList(); renderParentsList(); },
+      showToast('Cadastro realizado. Crie um login para esta pessoa.'); closeModal('personCreateModal'); renderStudentManagement(); renderTeachersList(); renderParentsList(); renderPermissionsList(); },
     'pick-guard': t => { const p = store.getPerson(t.dataset.person); if (!confirm(`Confirma que "${p.name}" é o responsável?`)) return;
       const b = el('personCreateBody').querySelector(`[data-slot-block="${t.dataset.slot}"]`); b.dataset.linked = p.id;
       if (!b.querySelector('[data-gfield="name"]').value) b.querySelector('[data-gfield="name"]').value = p.name;
@@ -613,9 +654,9 @@ const CrecheNowNotifications = (() => {
     'delete-student': () => { const id = el('sd-id').value; if (!confirm('Remover este aluno do sistema?')) return; store.removePerson(id); renderStudentManagement(); showToast('Aluno removido.'); closeModal('studentDetailModal'); },
     'open-person': t => renderPersonEdit(t.dataset.id),
     'update-person': () => { const id = el('pe-id').value, patch = { name: el('pe-name').value.trim(), birthDate: el('pe-birth').value, phone: el('pe-phone').value.trim(), email: el('pe-email').value.trim() };
-      if (el('pe-class')) patch.class = el('pe-class').value; store.updatePerson(id, patch); showToast('Cadastro atualizado.'); closeModal('personEditModal'); renderStudentManagement(); renderTeachersList(); renderParentsList(); },
+      if (el('pe-class')) patch.class = el('pe-class').value; store.updatePerson(id, patch); showToast('Cadastro atualizado.'); closeModal('personEditModal'); renderStudentManagement(); renderTeachersList(); renderParentsList(); renderPermissionsList(); },
     'delete-person': () => { const id = el('pe-id').value; if (!confirm('Excluir este cadastro? O login associado também será removido.')) return;
-      store.removeLogin(id); store.removePerson(id); showToast('Cadastro excluído.'); closeModal('personEditModal'); renderStudentManagement(); renderTeachersList(); renderParentsList(); },
+      store.removeLogin(id); store.removePerson(id); showToast('Cadastro excluído.'); closeModal('personEditModal'); renderStudentManagement(); renderTeachersList(); renderParentsList(); renderPermissionsList(); },
     'link-child': t => { const s = store.getPerson(t.dataset.child); if (!confirm(`Confirma o vínculo de "${s.name}" a este responsável?`)) return;
       const id = el('pe-id').value, p = store.getPerson(id); store.updatePerson(id, { linkedStudentIds: [...(p.linkedStudentIds || []), s.id] }); store.updatePerson(s.id, { parentIds: [...(s.parentIds || []), id] }); showToast('Criança vinculada.'); renderPersonEdit(id); renderParentsList(); },
     'unlink-child': t => { const cid = t.dataset.child, id = el('pe-id').value, p = store.getPerson(id), s = store.getPerson(cid);
@@ -624,16 +665,35 @@ const CrecheNowNotifications = (() => {
     'create-login': () => { const role = el('lf-role').value, pid = el('lf-person').value, email = el('lf-email').value.trim(), senha = el('lf-senha').value;
       if (!role || !pid || !email || senha.length < 6) return showToast('Preencha todos os campos.', 'warning');
       const person = store.getPerson(pid); store.addLogin({ personId: pid, email, senha, role, isJunior: role === 'secretary' && person.isJunior });
-      showToast('Login criado.'); closeModal('loginFormModal'); renderLoginsList(); },
-    'delete-login': t => { if (!confirm('Remover este login?')) return; store.removeLogin(t.dataset.id); renderLoginsList(); showToast('Login removido.'); },
+      showToast('Login criado.'); closeModal('loginFormModal'); renderPermissionsList(); },
+    'delete-login': t => { if (!confirm('Remover este login?')) return; store.removeLogin(t.dataset.id); renderPermissionsList(); showToast('Login removido.'); },
     'open-my-data': renderMyData,
     'export-my-data': () => { const s = session(); const blob = new Blob([JSON.stringify({ person: store.getPerson(s.personId) }, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'meus-dados.json'; a.click(); URL.revokeObjectURL(url); },
     'tutorial-next': () => { const s = session(); const total = (TUTORIALS[s.role] || []).length;
       if ((window.__tutStep || 0) < total - 1) { window.__tutStep++; renderTutorial(window.__tutStep); }
       else { const done = store.get('crechenow_tutorial_done') || {}; done[s.personId] = true; store.set('crechenow_tutorial_done', done); closeModal('tutorialModal'); } },
+    'tutorial-prev': () => { if ((window.__tutStep || 0) > 0) { window.__tutStep--; renderTutorial(window.__tutStep); } },
     'tutorial-skip': () => { const s = session(); const done = store.get('crechenow_tutorial_done') || {}; done[s.personId] = true; store.set('crechenow_tutorial_done', done); closeModal('tutorialModal'); },
     'repeat-tutorial': () => { window.__tutStep = 0; renderTutorial(0); },
+    'edit-access': t => {
+      const role = t.dataset.role;
+      const current = store.getCalendarAccess(role);
+      const levels = ['week', 'month', 'year'];
+      const html = `<div class="mb-3"><label class="form-label small fw-bold">Nível máximo para ${role === 'parent' ? 'pais' : 'professores'}</label>
+        <select class="form-select" id="access-level">${levels.map(l => `<option value="${l}" ${l === current ? 'selected' : ''}>${MODE_LABEL[l]}</option>`).join('')}</select></div>
+        <button class="btn btn-success w-100" data-action="save-access" data-role="${role}">Salvar</button>`;
+      el('personEditBody').innerHTML = html;
+      openModal('personEditModal');
+    },
+    'save-access': t => {
+      const role = t.dataset.role;
+      const level = el('access-level').value;
+      store.setCalendarAccess(role, level);
+      showToast(`Permissão de ${role === 'parent' ? 'pais' : 'professores'} atualizada.`);
+      closeModal('personEditModal');
+      renderPermissionsList();
+    },
     'logout': () => CrecheNowAuth.logout()
   };
 
@@ -671,14 +731,18 @@ const CrecheNowNotifications = (() => {
 
   const handleChange = e => {
     if (e.target.classList.contains('school-day-check')) { const cal = store.getSchoolCalendar(); cal.schoolDays = Array.from(document.querySelectorAll('.school-day-check:checked')).map(c => +c.value); store.setSchoolCalendar(cal); renderAgenda(); renderCardapio(); renderCalendarPreview(); showToast('Dias padrão atualizados.'); }
-    if (e.target.dataset.action === 'set-access') { store.setCalendarAccess(e.target.value); showToast('Permissão de calendário atualizada.'); }
+    if (e.target.dataset.action === 'set-access') { store.setCalendarAccess('parent', e.target.value); showToast('Permissão de calendário atualizada.'); }
     if (e.target.id === 'lf-role') handleLoginRoleChange();
   };
 
   const initRealTimeSync = () => {
     window.addEventListener('storage', e => {
       const s = session(); if (!s) return;
-      if (e.key === 'crechenow_notifications') { if (s.role !== 'secretary') renderFeed(activeFilter()); updateInboxBadge(); }
+      if (e.key === 'crechenow_notifications') {
+        if (s.role !== 'secretary') renderFeed(activeFilter());
+        else renderFeed('all', 'staff-carousel-inner-notifs');
+        updateInboxBadge();
+      }
       if (e.key === 'crechenow_notice_responses' && s.role === 'secretary') renderSent();
       if (e.key === 'crechenow_messages') {
         try { const old = new Set((JSON.parse(e.oldValue || '[]') || []).map(m => m.id));
@@ -686,7 +750,7 @@ const CrecheNowNotifications = (() => {
           if (mine.length) { showToast(`Nova mensagem de ${mine[0].fromName}.`); notifyLocal('CrecheNow — nova mensagem', `De ${mine[0].fromName}`); } } catch {}
         if (el('inboxModal')?.classList.contains('active')) renderInbox(activeTab()); updateInboxBadge(); }
       if (e.key === 'crechenow_routines') { if (s.role === 'parent') { const sel = el('childSelect'); renderRoutineForParent(sel?.value || (store.getPerson(s.personId)?.linkedStudentIds || [])[0]); } else if (s.role === 'teacher') renderTeacherDashboard(); }
-      if (e.key === 'crechenow_people' && s.role === 'secretary') { renderStudentManagement(); renderTeachersList(); renderParentsList(); }
+      if (e.key === 'crechenow_people' && s.role === 'secretary') { renderStudentManagement(); renderTeachersList(); renderParentsList(); renderPermissionsList(); }
       if (e.key === 'crechenow_agenda') { renderAgenda(); renderCalendarPreview(); }
       if (e.key === 'crechenow_cardapio') { renderCardapio(); renderCalendarPreview(); }
       if (e.key === 'crechenow_school_calendar' || e.key === 'crechenow_events') { renderAgenda(); renderCardapio(); renderCalendarPreview(); }
@@ -705,9 +769,9 @@ const CrecheNowNotifications = (() => {
       el('teacherClassDisplay').textContent = s.class || '';
       renderFeed(); renderTeacherDashboard(); renderTeacherAllergies(); renderAgenda(); renderCardapio(); renderCalendarPreview(); updateInboxBadge();
     } else {
-      if (CrecheNowAuth.canManagePeople()) { renderStudentManagement(); renderTeachersList(); renderParentsList(); renderLoginsList(); }
+      if (CrecheNowAuth.canManagePeople()) { renderStudentManagement(); renderTeachersList(); renderParentsList(); renderPermissionsList(); }
       else ['open-add-person', 'open-add-login', 'open-cardapio-editor', 'open-school-calendar'].forEach(a => { const b = document.querySelector(`[data-action="${a}"]`); if (b) b.style.display = 'none'; });
-      renderSent(); renderCalendarPreview(); updateInboxBadge();
+      renderSent(); renderFeed('all', 'staff-carousel-inner-notifs'); renderCalendarPreview(); updateInboxBadge();
     }
   };
 
