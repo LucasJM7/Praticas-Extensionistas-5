@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const gr = n => document.querySelector(`input[name="${n}"]:checked`)?.value || 'nao';
     const isPresent = att === 'present';
     CrecheNowStorage.addRoutine({ studentId, teacherPersonId: s.personId, attendance: isPresent,
-      questions: isPresent ? { behaved: gr('q1'), attention: gr('q2'), homework: gr('q3'), peers: gr('q4'), food: gr('q5') } : null,
+      questions: isPresent ? { attention: gr('q2'), homework: gr('q3'), peers: gr('q4'), food: gr('q5') } : null,
       comment: isPresent ? el('routineComment').value : '' });
     e.target.reset(); el('routineQuestionsContainer').classList.add('d-none');
     CrecheNowNotifications.showToast('Rotina registrada.'); CrecheNowNotifications.initRole(s);
