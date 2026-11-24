@@ -55,6 +55,18 @@ body { font-family: 'Poppins', system-ui, sans-serif; overflow: hidden; height: 
 .inbox-badge { display: none; position: absolute; top: -4px; right: -4px; background: var(--bad); color: #fff; font-size: .65rem; padding: 2px 6px; border-radius: 10px; font-weight: bold; }
 .btn-primary { --bs-btn-bg: var(--hud-b); --bs-btn-border-color: var(--hud-b); }
 
+#loginForm .btn-primary {
+  background-color: #a8d4f5 !important;
+  border-color: #a8d4f5 !important;
+  color: #1a1a1a !important;
+  transition: all 0.3s ease;
+}
+#loginForm .btn-primary:hover {
+  background-color: #2a66b4 !important;
+  border-color: #2a66b4 !important;
+  color: #fff !important;
+}
+
 .mobile-switcher { display: none; }
 @media (max-width: 991px) {
   body { overflow: auto; height: auto; } .dashboard-main { height: auto; overflow: visible; padding: 0 0 1rem; }
