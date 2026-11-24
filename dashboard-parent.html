@@ -10,119 +10,58 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#2a66b4">
 </head>
-<body class="bg-light">
-
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-    <div class="container-fluid px-4">
-      <a class="navbar-brand fw-bold" href="#">CRECHENOW</a>
+<body class="bg-light" data-role="parent">
+  <nav class="navbar navbar-expand-lg hud-b shadow-sm">
+    <div class="container-fluid px-4"><span class="navbar-brand fw-bold text-white">CRECHENOW</span>
       <div class="d-flex align-items-center">
         <span class="text-white me-3 d-none d-sm-inline" id="userNameDisplay">Responsável</span>
-        <button class="btn btn-outline-light btn-sm me-1" id="openMyDataBtn" title="Meus Dados (LGPD)">LGPD</button>
-        <button id="logoutBtn" class="btn btn-outline-light btn-sm">Sair</button>
-      </div>
-    </div>
+        <button class="btn btn-outline-light btn-sm me-1" data-action="repeat-tutorial">Tutorial</button>
+        <button class="btn btn-outline-light btn-sm me-1" data-action="open-my-data" title="Meus Dados (LGPD)">LGPD</button>
+        <button class="btn btn-outline-light btn-sm" data-action="logout">Sair</button>
+      </div></div>
   </nav>
-
-  <main class="dashboard-main">
-    <div class="dashboard-row">
-
-      <div class="side-column" data-mobile-label="Agenda">
-        <div class="card shadow-sm border-0">
-          <div class="card-header bg-success text-white py-2"><h5 class="mb-0 fs-6">Agenda Semanal</h5></div>
-          <div class="card-body" id="agenda-list"></div>
-        </div>
-      </div>
-
-      <div class="center-column" data-mobile-label="Início">
-
-        <div class="card shadow-sm border-0 notice-card-fixed" style="flex-shrink: 0;">
-          <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fs-6">Comunicados</h5>
-            <div class="btn-group btn-group-sm">
-              <button type="button" class="btn btn-outline-primary active" data-filter="all">Todos</button>
-              <button type="button" class="btn btn-outline-primary" data-filter="Eventos">Eventos</button>
-              <button type="button" class="btn btn-outline-primary" data-filter="Avisos">Avisos</button>
-              <button type="button" class="btn btn-outline-primary" data-filter="Bilhetes">Bilhetes</button>
-            </div>
-          </div>
-          <div class="notifications-carousel-wrapper" id="notifications-carousel">
-            <div class="carousel-inner" id="carousel-inner-notifs"></div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#notifications-carousel" data-bs-slide="prev"><span class="cn-arrow" aria-hidden="true">‹</span></button>
-            <button class="carousel-control-next" type="button" data-bs-target="#notifications-carousel" data-bs-slide="next"><span class="cn-arrow" aria-hidden="true">›</span></button>
-          </div>
-        </div>
-
-        <div class="card shadow-sm border-0 routine-card-fixed" style="flex-shrink: 0;">
-          <div class="card-header bg-success text-white py-2 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0 fs-6">Rotina de Hoje</h5>
-            <div>
-              <select id="childSelect" class="form-select form-select-sm d-inline-block w-auto me-2" style="font-size: 0.8rem;"></select>
-              <button class="btn btn-sm btn-light text-success fw-bold" id="toggleRoutineHistory">Histórico</button>
-            </div>
-          </div>
-          <div class="card-body" id="routine-today"><p class="text-muted text-center mt-4">Carregando...</p></div>
-          <div id="routine-history" class="d-none border-top p-3" style="max-height: 200px; overflow-y: auto;"></div>
-        </div>
-
-        <div class="d-flex gap-2 justify-content-center" style="flex-shrink: 0;">
-          <button class="btn btn-primary" id="openMsgModalBtn">Enviar Recado</button>
-          <button class="btn btn-outline-primary position-relative" id="openInboxModalBtn">
-            Mensagens
-            <span id="inboxBadge" class="inbox-badge">0</span>
-          </button>
-        </div>
-
-      </div>
-
-      <div class="side-column" data-mobile-label="Cardápio">
-        <div class="card shadow-sm border-0">
-          <div class="card-header bg-success text-white py-2"><h5 class="mb-0 fs-6">Cardápio Semanal</h5></div>
-          <div class="card-body" id="cardapio-list"></div>
-        </div>
-      </div>
-
+  <main class="dashboard-main"><div class="dashboard-row">
+    <div class="side-column" data-mobile-label="Agenda">
+      <div class="card shadow-sm border-0"><div class="card-header hud-a py-2"><h5 class="mb-0 fs-6">Agenda Semanal</h5></div>
+        <div class="card-body" id="agenda-list"></div></div></div>
+    <div class="center-column" data-mobile-label="Início">
+      <div class="card shadow-sm border-0 cal-preview-card" data-action="open-calendar"><div id="cal-preview"></div></div>
+      <div class="card shadow-sm border-0 notice-card-fixed">
+        <div class="card-header bg-white py-2 d-flex justify-content-between align-items-center"><h5 class="mb-0 fs-6">Comunicados</h5>
+          <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-outline-primary active" data-filter="all">Todos</button>
+            <button type="button" class="btn btn-outline-primary" data-filter="Eventos">Eventos</button>
+            <button type="button" class="btn btn-outline-primary" data-filter="Avisos">Avisos</button>
+            <button type="button" class="btn btn-outline-primary" data-filter="Bilhetes">Bilhetes</button></div></div>
+        <div class="notifications-carousel-wrapper" id="notifications-carousel"><div class="carousel-inner" id="carousel-inner-notifs"></div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#notifications-carousel" data-bs-slide="prev"><span class="cn-arrow">‹</span></button>
+          <button class="carousel-control-next" type="button" data-bs-target="#notifications-carousel" data-bs-slide="next"><span class="cn-arrow">›</span></button></div></div>
+      <div class="card shadow-sm border-0 routine-card-fixed">
+        <div class="card-header hud-a py-2 d-flex justify-content-between align-items-center"><h5 class="mb-0 fs-6">Rotina de Hoje</h5>
+          <div><select id="childSelect" class="form-select form-select-sm d-inline-block w-auto me-2" style="font-size:.8rem"></select>
+          <button class="btn btn-sm btn-light fw-bold" id="toggleRoutineHistory">Histórico</button></div></div>
+        <div class="card-body" id="routine-today"><p class="text-muted text-center mt-4">Carregando...</p></div>
+        <div id="routine-history" class="d-none border-top p-3" style="max-height:160px;overflow-y:auto"></div></div>
+      <div class="d-flex gap-2 justify-content-center" style="flex-shrink:0">
+        <button class="btn btn-primary" data-action="open-msg">Enviar Recado</button>
+        <button class="btn btn-outline-primary position-relative" data-action="open-inbox">Mensagens <span id="inboxBadge" class="inbox-badge">0</span></button></div>
     </div>
-  </main>
+    <div class="side-column" data-mobile-label="Cardápio">
+      <div class="card shadow-sm border-0"><div class="card-header hud-a py-2"><h5 class="mb-0 fs-6">Cardápio Semanal</h5></div>
+        <div class="card-body" id="cardapio-list"></div></div></div>
+  </div></main>
 
-  <div class="modal-overlay" id="messageFormModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="messageFormModal">×</button>
-      <h4 class="mb-3">Enviar Recado</h4>
-      <div id="messageFormBody"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="inboxModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="inboxModal">×</button>
-      <h4 class="mb-3">Minhas Mensagens</h4>
-      <ul class="nav nav-tabs mb-3">
-        <li class="nav-item"><button class="nav-link active" data-inbox-tab="received">Recebidas</button></li>
-        <li class="nav-item"><button class="nav-link" data-inbox-tab="sent">Enviadas</button></li>
-      </ul>
-      <div id="inbox-content" style="max-height: 400px; overflow-y: auto;"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="threadModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="threadModal">×</button>
-      <h4 class="mb-3">Conversa</h4>
-      <div id="threadModalBody"></div>
-    </div>
-  </div>
-
-  <div class="modal-overlay" id="routineModal">
-    <div class="modal-box" id="routineModalContent"></div>
-  </div>
-
-  <div class="modal-overlay" id="myDataModal">
-    <div class="modal-box">
-      <button class="modal-close" data-close="myDataModal">×</button>
-      <h4 class="mb-3">Meus Dados</h4>
-      <div id="myDataBody"></div>
-    </div>
-  </div>
+  <div class="modal-overlay" id="messageFormModal"><div class="modal-box"><button class="modal-close" data-close="messageFormModal">×</button><h4 class="mb-3">Enviar Recado</h4><div id="messageFormBody"></div></div></div>
+  <div class="modal-overlay" id="inboxModal"><div class="modal-box"><button class="modal-close" data-close="inboxModal">×</button><h4 class="mb-3">Minhas Mensagens</h4>
+    <ul class="nav nav-tabs mb-3"><li class="nav-item"><button class="nav-link active" data-inbox-tab="received">Recebidas</button></li><li class="nav-item"><button class="nav-link" data-inbox-tab="sent">Enviadas</button></li></ul>
+    <div id="inbox-content" style="max-height:400px;overflow-y:auto"></div></div></div>
+  <div class="modal-overlay" id="threadModal"><div class="modal-box"><button class="modal-close" data-close="threadModal">×</button><h4 class="mb-3">Conversa</h4><div id="threadModalBody"></div></div></div>
+  <div class="modal-overlay" id="routineModal"><div class="modal-box" id="routineModalContent"></div></div>
+  <div class="modal-overlay" id="myDataModal"><div class="modal-box"><button class="modal-close" data-close="myDataModal">×</button><h4 class="mb-3">Meus Dados</h4><div id="myDataBody"></div></div></div>
+  <div class="modal-overlay calendar-modal" id="calendarModal"><div class="modal-box"><button class="modal-close" data-close="calendarModal">×</button><h4 class="mb-3">Calendário</h4>
+    <div class="d-flex justify-content-between align-items-center mb-2" id="calendarViewHeader"></div>
+    <div id="calendarViewBody" class="calendar-grid"></div></div></div>
+  <div class="modal-overlay" id="tutorialModal"><div class="modal-box"><button class="modal-close" data-close="tutorialModal">×</button><div id="tutorialBody"></div></div></div>
 
   <div id="toast-container" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
